@@ -30,27 +30,34 @@ test_data_path = "./data-set/behavior/test"
 weight_model_path = "./model/behavior/vgg16_weights"
 batch_size = 32
 Epochs = 18
-# dict_Label = {0: "eat", 1: "noeat"}
+dict_label = {0: "eat", 1: "noeat"}
+datagen_args = dict(
+    rotation_range=20,
+    rescale=1./255,
+    width_shift_range=0.2,
+    height_shift_range=0.2,
+    horizontal_flip=True
+)
 
-trian_datagen = ImageDataGenerator(zoom_range=0.2, horizontal_flip=True)
+trian_datagen = ImageDataGenerator(**datagen_args)
 train_data = trian_datagen.flow_from_directory(directory=train_data_path, target_size=(
-    img_height, img_weight), subset="training", class_mode="categorical", batch_size=batch_size)
+    img_height, img_weight), subset='training', class_mode="categorical", interpolation="lanczos", batch_size=batch_size, shuffle=True)
 validation_data = trian_datagen.flow_from_directory(directory=validation_data_path, target_size=(
-    img_height, img_weight), subset="validation", class_mode="categorical", batch_size=batch_size)
+    img_height, img_weight), subset='validation', class_mode="categorical", interpolation="lanczos", batch_size=batch_size, shuffle=True)
 
-test_datagen = ImageDataGenerator(zoom_range=0.2, horizontal_flip=True)
-test_data = test_datagen.flow_from_directory(
-    directory=test_data_path, target_size=(img_height, img_weight), batch_size=batch_size, class_mode='categorical')
+# test_datagen = ImageDataGenerator(rescale=1./255, horizontal_flip=True)
+# test_data = test_datagen.flow_from_directory(
+#     directory=test_data_path, target_size=(img_height, img_weight), batch_size=batch_size, class_mode='categorical')
 
 STEP_SIZE_TRAIN = train_data.n//train_data.batch_size
 STEP_SIZE_VALID = validation_data.n//validation_data.batch_size
-STEP_SIZE_TEST = test_data.n//test_data.batch_size
+# STEP_SIZE_TEST = test_data.n//test_data.batch_size
 
-# # Model VGG16_1
+# Model VGG16_1
 vggmodel = VGG16(include_top=False, weights='imagenet',
                  input_tensor=None, input_shape=(img_height, img_weight, 3))
 
-# don't train existing weights
+# # don't train existing weights
 for layer in vggmodel.layers:
     layer.trainable = False
 
@@ -90,11 +97,12 @@ duration = datetime.now() - start
 print("Training completed in time: ", duration)
 model.save_weights("vgg_16_behavior_1.h5")
 
-# evalute model
-score = model.evaluate(test_data)
-print('Test Loss:', score[0])
-print('Test accuracy:', score[1])
+# # evalute model
+# score = model.evaluate(test_data)
+# print('Test Loss:', score[0])
+# print('Test accuracy:', score[1])
 
+# plot result train model
 plt.plot(history.history["acc"])
 plt.plot(history.history['val_acc'])
 plt.plot(history.history['loss'])
@@ -104,3 +112,14 @@ plt.ylabel("Accuracy")
 plt.xlabel("Epoch")
 plt.legend(["Accuracy", "Validation Accuracy", "loss", "Validation Loss"])
 plt.show()
+
+# Test model with image
+test_image = image.load_img(
+    test_data_path, color_mode='rgb', target_size=(224, 224))
+
+test_image = image.img_to_array(test_image)
+test_image = np.expand_dims(test_image, axis=0)
+result = model.predict(test_image)
+
+res = np.argmax(result)
+print("The predicted output is :", dict_label[res])
