@@ -6,15 +6,11 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 from keras.callbacks import ReduceLROnPlateau
 from keras.callbacks import ModelCheckpoint, EarlyStopping
-from keras.layers import Conv2D, MaxPooling2D, AveragePooling2D
-from keras.layers import Dense, Flatten
+from keras.layers import Dense, Flatten, Input
 from keras import optimizers
 from keras.models import Sequential
-from keras.layers import Input, Lambda, Dense, Flatten
 from keras.models import Model
 from keras.applications.vgg16 import VGG16
-from keras.applications.vgg16 import preprocess_input
-from keras.preprocessing import image
 # from keras.preprocessing.image import ImageDataGenerator
 from keras.models import Sequential
 
@@ -44,9 +40,31 @@ def setup_architechture_vgg16(model: Model):
     return new_model
 
 
+def setup_architechture_vgg16_2(model: Model):
+    for layers in (model.layers)[:19]:
+        layers.trainable = False
+
+    X = model.layers[-2].output
+    predictions = Dense(2, activation="softmax")(X)
+    new_model = Model(inputs=model.input, outputs=predictions)
+    new_model.compile(loss="categorical_crossentropy",
+                      optimizer=optimizers.Adam(), metrics=["accuracy"])
+    # model.summary()
+    return new_model
+
+
 def train_model_vgg16(checkpoint_path: str, save_weights_path: str, model: Model,  train_data, validation_data, step_size_train, step_size_valid, epochs):
     checkpoint = ModelCheckpoint(checkpoint_path, monitor='val_acc', verbose=1,
                                  save_best_only=True, save_weights_only=False, mode='auto', period=1)
+
+    # lr_reducer = ReduceLROnPlateau(factor=np.sqrt(0.1),
+    #                                cooldown=0,
+    #                                patience=5,
+    #                                min_lr=0.5e-6)
+    # checkpoint = ModelCheckpoint(filepath=weight_model_path,
+    #                              verbose=1, save_best_only=True)
+
+    # callbacks = [checkpoint, lr_reducer]
 
     early = EarlyStopping(monitor='val_acc', min_delta=0,
                           patience=40, verbose=1, mode='auto')
@@ -64,41 +82,28 @@ def train_model_vgg16(checkpoint_path: str, save_weights_path: str, model: Model
     print("Training completed in time: ", duration)
     # model.save_weights("vgg_16_behavior_1.h5")
     model.save_weights(save_weights_path)
-    return model
-
-# lr_reducer = ReduceLROnPlateau(factor=np.sqrt(0.1),
-#                                cooldown=0,
-#                                patience=5,
-#                                min_lr=0.5e-6)
-# checkpoint = ModelCheckpoint(filepath=weight_model_path,
-#                              verbose=1, save_best_only=True)
-
-# callbacks = [checkpoint, lr_reducer]
+    return model, history
 
 
-# # evalute model
-# score = model.evaluate(test_data)
-# print('Test Loss:', score[0])
-# print('Test accuracy:', score[1])
+def evaluate_model_vgg16(model: Model, test_data_set):
+    score = model.evaluate(test_data_set)
+    return score
 
-# plot result train model
-plt.plot(history.history["acc"])
-plt.plot(history.history['val_acc'])
-plt.plot(history.history['loss'])
-plt.plot(history.history['val_loss'])
-plt.title("model accuracy")
-plt.ylabel("Accuracy")
-plt.xlabel("Epoch")
-plt.legend(["Accuracy", "Validation Accuracy", "loss", "Validation Loss"])
-plt.show()
 
-# Test model with image
-test_image = image.load_img(
-    test_data_path, color_mode='rgb', target_size=(224, 224))
+def plot_result_train_model(history):
+    plt.plot(history.history["acc"])
+    plt.plot(history.history['val_acc'])
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.title("model accuracy")
+    plt.ylabel("Accuracy")
+    plt.xlabel("Epoch")
+    plt.legend(["Accuracy", "Validation Accuracy", "loss", "Validation Loss"])
+    plt.show()
+    return
 
-test_image = image.img_to_array(test_image)
-test_image = np.expand_dims(test_image, axis=0)
-result = model.predict(test_image)
 
-res = np.argmax(result)
-print("The predicted output is :", dict_label[res])
+# result = model.predict(test_image)
+
+# res = np.argmax(result)
+# print("The predicted output is :", dict_label[res])
