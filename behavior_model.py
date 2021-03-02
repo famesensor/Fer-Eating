@@ -36,7 +36,6 @@ def setup_architechture_vgg16(model: Model):
                       optimizer=optimizers.Adam(),
                       metrics=['accuracy'])
     # new_model.summary()
-
     return new_model
 
 
@@ -49,11 +48,11 @@ def setup_architechture_vgg16_2(model: Model):
     new_model = Model(inputs=model.input, outputs=predictions)
     new_model.compile(loss="categorical_crossentropy",
                       optimizer=optimizers.Adam(), metrics=["accuracy"])
-    # model.summary()
+    # new_model.summary()
     return new_model
 
 
-def train_model_vgg16(checkpoint_path: str, save_weights_path: str, model: Model,  train_data, validation_data, step_size_train, step_size_valid, epochs):
+def train_model_vgg16(checkpoint_path: str, save_weights_path: str, model: Model,  train_data, validation_data, step_size_train, step_size_valid, epochs_train: int):
     checkpoint = ModelCheckpoint(checkpoint_path, monitor='val_acc', verbose=1,
                                  save_best_only=True, save_weights_only=False, mode='auto', period=1)
 
@@ -74,7 +73,7 @@ def train_model_vgg16(checkpoint_path: str, save_weights_path: str, model: Model
     start = datetime.now()
     history = model.fit_generator(train_data,
                                   steps_per_epoch=step_size_train,
-                                  epochs=epochs, verbose=5,
+                                  epochs=epochs_train, verbose=5,
                                   validation_data=validation_data,
                                   validation_steps=step_size_valid, callbacks=callbacks)
 
@@ -101,9 +100,3 @@ def plot_result_train_model(history):
     plt.legend(["Accuracy", "Validation Accuracy", "loss", "Validation Loss"])
     plt.show()
     return
-
-
-# result = model.predict(test_image)
-
-# res = np.argmax(result)
-# print("The predicted output is :", dict_label[res])
