@@ -42,7 +42,7 @@ if __name__ == "__main__":
 
     # init model vgg 1
     model_1 = init_model_vgg16(
-        include_top=False, input_tensor=None, input_shape=(img_height, img_weight, 3))
+        include_top=False, input_tensor=None, input_shape=(img_height, img_weight, channels))
 
     model_1 = setup_architechture_vgg16(model_1)
     model_train_1, history_1 = train_model_vgg16(checkpoint_path=check_point_path, save_weights_path=save_weight_one_path, model=model_1,
@@ -51,7 +51,7 @@ if __name__ == "__main__":
 
     # init model vgg 2
     model_2 = init_model_vgg16(
-        include_top=True, input_shape=None, input_tensor=None)
+        include_top=True, input_tensor=None, input_shape=(img_height, img_weight, channels))
     model_2 = setup_architechture_vgg16_2(model_2)
     model_train_2, history_2 = train_model_vgg16(checkpoint_path=check_point_path, save_weights_path=save_weight_two_path, model=model_2,
                                                  train_data=train_data, validation_data=validation_data, step_size_train=STEP_SIZE_TRAIN, step_size_valid=STEP_SIZE_VALID, epochs_train=Epochs)
