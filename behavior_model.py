@@ -80,7 +80,7 @@ def train_model_vgg16(checkpoint_path: str, save_weights_path: str, model: Model
     duration = datetime.now() - start
     print("Training completed in time: ", duration)
     # model.save_weights("vgg_16_behavior_1.h5")
-    model.save_weights(save_weights_path)
+    model.save(save_weights_path)
     return model, history
 
 
