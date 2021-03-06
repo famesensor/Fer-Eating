@@ -11,7 +11,6 @@ from keras import optimizers
 from keras.models import Sequential
 from keras.models import Model
 from keras.applications.vgg16 import VGG16
-# from keras.preprocessing.image import ImageDataGenerator
 from keras.models import Sequential
 
 # download vgg16 weight
@@ -79,8 +78,8 @@ def train_model_vgg16(checkpoint_path: str, save_weights_path: str, model: Model
 
     duration = datetime.now() - start
     print("Training completed in time: ", duration)
-    # model.save_weights("vgg_16_behavior_1.h5")
-    model.save(save_weights_path)
+    # model.save_weights("vgg_16_behavior_1.h5") # use -> model.load_weights()
+    model.save_weights(save_weights_path)
     return model, history
 
 
