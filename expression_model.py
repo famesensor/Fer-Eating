@@ -2,10 +2,14 @@ import keras
 import numpy as np
 import matplotlib.pyplot as plt
 
+from datetime import datetime
+from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
+from keras.layers import Dense, Flatten, Input
+from keras import optimizers
+from keras.models import Sequential
 from keras.applications.vgg16 import VGG16
 from keras.applications.vgg19 import VGG19
-from keras.applications import ResNet50V2
-from keras.applications import MobileNetV2
+from keras.applications import ResNet50V2, MobileNetV2
 from keras.models import Model
 
 
@@ -42,10 +46,23 @@ def init_model_alexnet():
 
 
 def setup_network_vgg16(model: Model) -> Model:
-    return
+    # don't train existing weights
+    for layer in model.layers:
+        layer.trainable = False
+
+    x = Flatten()(model.output)
+    prediction = Dense(8, activation='softmax')(x)
+    new_model = Model(inputs=model.input, outputs=prediction)
+    new_model.compile(loss='categorical_crossentropy',
+                      optimizer=optimizers.Adam(),
+                      metrics=['accuracy'])
+    return new_model
 
 
 def setup_network_vgg19(model: Model) -> Model:
+    for layer in model.layers:
+        layer.trainable = False
+
     return
 
 
