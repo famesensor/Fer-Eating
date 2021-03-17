@@ -45,13 +45,16 @@ def init_model_alexnet():
     return
 
 
-def setup_network_vgg16(model: Model) -> Model:
-    # don't train existing weights
-    for layer in model.layers:
-        layer.trainable = False
+def setup_network_vgg16(model: Model, include_top: bool, class_num: int) -> Model:
+    if include_top:
+        for layer in model.layers[:19]:
+            layer.trainable = False
+        x = model.layers[-2].outputs
+        prediction = Dense(class_num, activation='softmax')(x)
+    # else:
+    #     for layer in model.layers:
+    #         layer.trainable = False
 
-    x = Flatten()(model.output)
-    prediction = Dense(8, activation='softmax')(x)
     new_model = Model(inputs=model.input, outputs=prediction)
     new_model.compile(loss='categorical_crossentropy',
                       optimizer=optimizers.Adam(),
@@ -59,15 +62,32 @@ def setup_network_vgg16(model: Model) -> Model:
     return new_model
 
 
-def setup_network_vgg19(model: Model) -> Model:
-    for layer in model.layers:
-        layer.trainable = False
+def setup_network_vgg19(model: Model, include_top: bool, class_num: int) -> Model:
+    if include_top:
+        for layer in model.layers[:22]:
+            layer.trainable = False
+        x = model.layers[-2].outputs
+        prediction = Dense(class_num, activation='softmax')(x)
 
-    return
+    new_model = Model(input=model.input, output=prediction)
+    new_model.compile(loss='categorical_crossentropy',
+                      optimizer=optimizers.Adam(),
+                      metrics=['accuracy'])
+    return new_model
 
 
-def setup_network_resnet(model: Model) -> Model:
-    return
+def setup_network_resnet(model: Model, include_top: bool, class_num: int) -> Model:
+    if include_top:
+        for layer in model.layers[:191]:
+            layer.trainable = False
+        x = model.layers[-2].outputs
+        prediction = Dense(class_num, activation='softmax')(x)
+
+    new_model = Model(input=model.input, output=prediction)
+    new_model.compile(loss='categorical_crossentropy',
+                      optimizer=optimizers.Adam(),
+                      metrics=['accuracy'])
+    return new_model
 
 
 def setup_network_mobilenet(model: Model) -> Model:
