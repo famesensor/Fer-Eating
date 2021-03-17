@@ -1,3 +1,5 @@
+from expression_model import init_model_vgg16, init_model_vgg19, setup_network_vgg16, setup_network_vgg19
+
 if __name__ == "__main__":
     # init value
     img_height, img_weight = 224, 224
@@ -14,12 +16,22 @@ if __name__ == "__main__":
     save_weight_mobilenet = "./models/expression/mobilenet/mobilenet_expression.h5"
     batch_size = 32
     Epochs = 18
+    include_top = True
+    class_num = 8
 
     # load data set train,test and validate
 
     # init vgg16
+    vgg16_model = init_model_vgg16(include_top=include_top, input_tensor=None, input_shape=(
+        img_height, img_weight, channels))
+    vgg16_model = setup_network_vgg16(
+        model=vgg16_model, include_top=include_top, class_num=class_num)
 
     # init vgg19
+    vgg19_model = init_model_vgg19(include_top=include_top, input_tensor=None, input_shape=(
+        img_height, img_weight, channels))
+    vgg19_model = setup_network_vgg19(
+        model=vgg19_model, include_top=include_top, class_num=chr)
 
     # init resnet
 
