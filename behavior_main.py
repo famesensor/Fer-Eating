@@ -6,7 +6,7 @@ from behavior_model import init_model_vgg16, setup_architechture_vgg16, setup_ar
 if __name__ == "__main__":
     # init value
     img_height, img_weight = 224, 224
-    channels = 3  # 3 RGB
+    channels = 3
     train_data_path = "./data-set/behavior/train"
     validation_data_path = "./data-set/behavior/validate"
     test_data_path = "./data-set/behavior/test"

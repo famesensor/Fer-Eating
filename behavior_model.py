@@ -1,20 +1,14 @@
-# TODO: refactor code now to function base
 import keras
 import numpy as np
 import matplotlib.pyplot as plt
 
 from datetime import datetime
-from keras.callbacks import ReduceLROnPlateau
-from keras.callbacks import ModelCheckpoint, EarlyStopping
+from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 from keras.layers import Dense, Flatten, Input
 from keras import optimizers
-from keras.models import Sequential
 from keras.models import Model
 from keras.applications.vgg16 import VGG16
 from keras.models import Sequential
-
-# download vgg16 weight
-# https://gist.github.com/baraldilorenzo/07d7802847aaad0a35d3
 
 
 def init_model_vgg16(include_top: bool, input_tensor, input_shape: tuple):
