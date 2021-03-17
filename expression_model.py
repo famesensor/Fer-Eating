@@ -90,8 +90,18 @@ def setup_network_resnet(model: Model, include_top: bool, class_num: int) -> Mod
     return new_model
 
 
-def setup_network_mobilenet(model: Model) -> Model:
-    return
+def setup_network_mobilenet(model: Model, include_top: bool, class_num: int) -> Model:
+    if include_top:
+        for layer in model.layers:
+            layer.trainable = False
+        x = model.layers[-2].outputs
+        prediction = Dense(class_num, activation='softmax')(x)
+
+    new_model = Model(input=model.input, output=prediction)
+    new_model.compile(loss='categorical_crossentropy',
+                      optimizer=optimizers.Adam(),
+                      metrics=['accuracy'])
+    return new_model
 
 
 def train_model(model: Model) -> (Model, None):
