@@ -1,4 +1,4 @@
-from expression_model import init_model_vgg16, init_model_vgg19, init_model_resnet50v2, init_model_mobilenet, setup_network_vgg16, setup_network_vgg19, setup_network_resnet, setup_network_mobilenet
+from expression_model import init_model_vgg16, init_model_vgg19, init_model_resnet50v2, init_model_mobilenet, setup_network
 
 if __name__ == "__main__":
     # init value
@@ -18,31 +18,33 @@ if __name__ == "__main__":
     Epochs = 18
     include_top = True
     class_num = 8
+    activation = "softmax"
+    loss = "categorical_crossentropy"
 
     # load data set train,test and validate
 
     # init vgg16
     vgg16_model = init_model_vgg16(include_top=include_top, input_tensor=None, input_shape=(
         img_height, img_weight, channels))
-    vgg16_model = setup_network_vgg16(
-        model=vgg16_model, include_top=include_top, class_num=class_num)
+    vgg16_model = setup_network(
+        model=vgg16_model, include_top=include_top, class_num=class_num, layer_num=19, activation=activation, loss=loss)
 
     # init vgg19
     vgg19_model = init_model_vgg19(include_top=include_top, input_tensor=None, input_shape=(
         img_height, img_weight, channels))
-    vgg19_model = setup_network_vgg19(
-        model=vgg19_model, include_top=include_top, class_num=chr)
+    vgg19_model = setup_network(
+        model=vgg19_model, include_top=include_top, class_num=class_num, layer_num=22, activation=activation, loss=loss)
 
     # init resnet
     resnet_model = init_model_resnet50v2(
         include_top=include_top, input_tensor=None, input_shape=(img_height, img_weight, channels))
-    resnet_model = setup_network_resnet(
-        model=resnet_model, include_top=include_top, class_num=class_num)
+    resnet_model = setup_network(
+        model=resnet_model, include_top=include_top, class_num=class_num, layer_num=190, activation=activation, loss=loss)
 
     # init alexnet
 
     # init mobilenet
     mobile_model = init_model_mobilenet(
         include_top=include_top, input_tensor=None, input_shape=(img_height, img_weight, channels))
-    mobile_model = setup_network_mobilenet(
-        model=mobile_model, include_top=include_top, class_num=class_num)
+    mobile_model = setup_network(
+        model=mobile_model, include_top=include_top, class_num=class_num, layer_num=154, activation=activation, loss=loss)
