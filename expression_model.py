@@ -45,63 +45,77 @@ def init_model_alexnet():
     return
 
 
-def setup_network_vgg16(model: Model, include_top: bool, class_num: int) -> Model:
+def setup_network(model: Model, include_top: bool, class_num: int, layer_num: int, activation: str, loss: str):
     if include_top:
-        for layer in model.layers[:19]:
+        for layer in model.layers[:layer_num]:
             layer.trainable = False
         x = model.layers[-2].outputs
-        prediction = Dense(class_num, activation='softmax')(x)
-    # else:
-    #     for layer in model.layers:
-    #         layer.trainable = False
+        prediction = Dense(class_num, activation=activation)(x)
 
     new_model = Model(inputs=model.input, outputs=prediction)
-    new_model.compile(loss='categorical_crossentropy',
+    new_model.compile(loss=loss,
                       optimizer=optimizers.Adam(),
                       metrics=['accuracy'])
     return new_model
 
 
-def setup_network_vgg19(model: Model, include_top: bool, class_num: int) -> Model:
-    if include_top:
-        for layer in model.layers[:22]:
-            layer.trainable = False
-        x = model.layers[-2].outputs
-        prediction = Dense(class_num, activation='softmax')(x)
+# def setup_network_vgg16(model: Model, include_top: bool, class_num: int) -> Model:
+#     if include_top:
+#         for layer in model.layers[:19]:
+#             layer.trainable = False
+#         x = model.layers[-2].outputs
+#         prediction = Dense(class_num, activation='softmax')(x)
+#     # else:
+#     #     for layer in model.layers:
+#     #         layer.trainable = False
 
-    new_model = Model(input=model.input, output=prediction)
-    new_model.compile(loss='categorical_crossentropy',
-                      optimizer=optimizers.Adam(),
-                      metrics=['accuracy'])
-    return new_model
-
-
-def setup_network_resnet(model: Model, include_top: bool, class_num: int) -> Model:
-    if include_top:
-        for layer in model.layers[:191]:
-            layer.trainable = False
-        x = model.layers[-2].outputs
-        prediction = Dense(class_num, activation='softmax')(x)
-
-    new_model = Model(input=model.input, output=prediction)
-    new_model.compile(loss='categorical_crossentropy',
-                      optimizer=optimizers.Adam(),
-                      metrics=['accuracy'])
-    return new_model
+#     new_model = Model(inputs=model.input, outputs=prediction)
+#     new_model.compile(loss='categorical_crossentropy',
+#                       optimizer=optimizers.Adam(),
+#                       metrics=['accuracy'])
+#     return new_model
 
 
-def setup_network_mobilenet(model: Model, include_top: bool, class_num: int) -> Model:
-    if include_top:
-        for layer in model.layers:
-            layer.trainable = False
-        x = model.layers[-2].outputs
-        prediction = Dense(class_num, activation='softmax')(x)
+# def setup_network_vgg19(model: Model, include_top: bool, class_num: int) -> Model:
+#     if include_top:
+#         for layer in model.layers[:22]:
+#             layer.trainable = False
+#         x = model.layers[-2].outputs
+#         prediction = Dense(class_num, activation='softmax')(x)
 
-    new_model = Model(input=model.input, output=prediction)
-    new_model.compile(loss='categorical_crossentropy',
-                      optimizer=optimizers.Adam(),
-                      metrics=['accuracy'])
-    return new_model
+#     new_model = Model(input=model.input, output=prediction)
+#     new_model.compile(loss='categorical_crossentropy',
+#                       optimizer=optimizers.Adam(),
+#                       metrics=['accuracy'])
+#     return new_model
+
+
+# def setup_network_resnet(model: Model, include_top: bool, class_num: int) -> Model:
+#     if include_top:
+#         for layer in model.layers[:190]:
+#             layer.trainable = False
+#         x = model.layers[-2].outputs
+#         prediction = Dense(class_num, activation='softmax')(x)
+
+#     new_model = Model(input=model.input, output=prediction)
+#     new_model.compile(loss='categorical_crossentropy',
+#                       optimizer=optimizers.Adam(),
+#                       metrics=['accuracy'])
+#     return new_model
+
+
+# def setup_network_mobilenet(model: Model, include_top: bool, class_num: int) -> Model:
+#     if include_top:
+#         for layer in model.layers[:154]:
+#             layer.trainable = False
+#         x = model.layers[-2].outputs
+#         prediction = Dense(class_num, activation='softmax')(x)
+
+#     new_model = Model(input=model.input, output=prediction)
+#     new_model.compile(loss='categorical_crossentropy',
+#                       optimizer=optimizers.Adam(),
+#                       metrics=['accuracy'])
+#     return new_model
 
 
 def train_model(model: Model) -> (Model, None):
