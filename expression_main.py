@@ -1,4 +1,5 @@
 from expression_model import init_model_vgg16, init_model_vgg19, init_model_resnet50v2, init_model_alexnet, init_model_mobilenet, setup_network, train_model, plot_result_train_model
+from preparation import load_data_set
 
 if __name__ == "__main__":
     # init value
@@ -20,8 +21,22 @@ if __name__ == "__main__":
     class_num = 8
     activation = "softmax"
     loss = "categorical_crossentropy"
+    train_datagen_args = dict(
+        rotation_range=20,
+        rescale=1./255,
+        width_shift_range=0.2,
+        height_shift_range=0.2,
+        horizontal_flip=True
+    )
 
     # load data set train,test and validate
+    train_data = load_data_set(
+        train_datagen_args, train_data_path, (img_height, img_weight), batch_size)
+    validation_data = load_data_set(
+        train_datagen_args=train_datagen_args, train_data_path=train_data_path, size_image=(img_height, img_weight), batch_size=batch_size)
+
+    STEP_SIZE_TRAIN = train_data.n//train_data.batch_size
+    STEP_SIZE_VALID = validation_data.n//validation_data.batch_size
 
     # vgg16
     print("vgg16 model start...")
@@ -33,7 +48,7 @@ if __name__ == "__main__":
         model=vgg16_model, include_top=include_top, class_num=class_num, layer_num=19, activation=activation, loss=loss)
     # train model
     train_vgg16, history_vgg16 = train_model(checkpoint_path=check_point_path, save_weight_path=save_weight_vgg16,
-                                             model=vgg16_model, train_data="", validation_data="", step_size_train="", step_size_valid="", epochs_train=Epochs)
+                                             model=vgg16_model, train_data=train_data, validation_data=validation_data, step_size_train=STEP_SIZE_TRAIN, step_size_valid=STEP_SIZE_VALID, epochs_train=Epochs)
     # plot result trian model
     plot_result_train_model(history=history_vgg16,
                             model_name="vgg16 accurency")
@@ -49,7 +64,7 @@ if __name__ == "__main__":
         model=vgg19_model, include_top=include_top, class_num=class_num, layer_num=22, activation=activation, loss=loss)
     # train model
     train_vgg19, history_vgg19 = train_model(checkpoint_path=check_point_path, save_weight_path=save_weight_vgg19,
-                                             model=vgg19_model, train_data="", validation_data="", step_size_train="", step_size_valid="", epochs_train=Epochs)
+                                             model=vgg19_model, train_data=train_data, validation_data=validation_data, step_size_train=STEP_SIZE_TRAIN, step_size_valid=STEP_SIZE_VALID, epochs_train=Epochs)
     # plot result trian model
     plot_result_train_model(history=history_vgg19,
                             model_name="vgg19 accurency")
@@ -65,15 +80,16 @@ if __name__ == "__main__":
         model=resnet_model, include_top=include_top, class_num=class_num, layer_num=190, activation=activation, loss=loss)
     # train model
     train_resnet, history_resnet = train_model(checkpoint_path=check_point_path, save_weight_path=save_weight_resnet,
-                                               model=resnet_model, train_data="", validation_data="", step_size_train="", step_size_valid="", epochs_train=Epochs)
+                                               model=resnet_model, train_data=train_data, validation_data=validation_data, step_size_train=STEP_SIZE_TRAIN, step_size_valid=STEP_SIZE_VALID, epochs_train=Epochs)
     # plot result trian model
     plot_result_train_model(history=history_resnet,
                             model_name="resnet accurency")
     print("resnet model end...")
 
-    # alexnet
-    # init alexnet
-    alexnet_model = init_model_alexnet()
+    # # alexnet
+    # # init alexnet
+    # alexnet_model = init_model_alexnet()
+
     # mobilenet v2
     print("mobilenetV2 model start...")
     # init mobilenet
@@ -85,7 +101,7 @@ if __name__ == "__main__":
     # train model
     # train model
     train_resnet, history_resnet = train_model(checkpoint_path=check_point_path, save_weight_path=save_weight_mobilenet,
-                                               model=mobile_model, train_data="", validation_data="", step_size_train="", step_size_valid="", epochs_train=Epochs)
+                                               model=mobile_model, train_data=train_data, validation_data=validation_data, step_size_train=STEP_SIZE_TRAIN, step_size_valid=STEP_SIZE_VALID, epochs_train=Epochs)
     # plot result trian model
     plot_result_train_model(history=history_resnet,
                             model_name="mobilenet accurency")
