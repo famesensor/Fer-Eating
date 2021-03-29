@@ -30,6 +30,7 @@ if __name__ == "__main__":
     )
 
     # load data set train,test and validate
+    print("load data...")
     train_data = load_data_set(
         train_datagen_args, train_data_path, (img_height, img_weight), batch_size)
     validation_data = load_data_set(
@@ -37,6 +38,7 @@ if __name__ == "__main__":
 
     STEP_SIZE_TRAIN = train_data.n//train_data.batch_size
     STEP_SIZE_VALID = validation_data.n//validation_data.batch_size
+    print("load data end...")
 
     # vgg16
     print("vgg16 model start...")
