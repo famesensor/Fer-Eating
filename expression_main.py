@@ -7,8 +7,6 @@ if __name__ == "__main__":
     channels = 3
     train_data_path = "./data-set/expression/train/"
     validation_data_path = "./data-set/expression/validate/"
-    # test_data_path = "./data-set/behavior/test"
-    # test_one_path = "./data-set/behavior/test/test.jpg"
     check_point_path = "./models/expression/working/"
     save_weight_vgg16 = "./models/expression/vgg16/vgg16_expression.h5"
     save_weight_vgg19 = "./models/expression/vgg19/vgg19_expression.h5"
@@ -88,9 +86,16 @@ if __name__ == "__main__":
                             model_name="resnet accurency")
     print("resnet model end...")
 
-    # # alexnet
-    # # init alexnet
-    # alexnet_model = init_model_alexnet()
+    # alexnet
+    # init alexnet
+    print("alexnet model start...")
+    alexnet_model = init_model_alexnet()
+    # train model
+    train_alexnet, history_alexnet = train_model(checkpoint_path=check_point_path, save_weight_path=save_weight_alexnet, model=alexnet_model,
+                                                 train_data=train_data, validation_data=validation_data, step_size_train=STEP_SIZE_TRAIN, step_size_valid=STEP_SIZE_VALID, epochs_train=Epochs)
+    plot_result_train_model(history=history_alexnet,
+                            model_name="alexnet accurency")
+    print("alexnet model end...")
 
     # mobilenet v2
     print("mobilenetV2 model start...")
@@ -100,7 +105,6 @@ if __name__ == "__main__":
     # setup network
     mobile_model = setup_network(
         model=mobile_model, include_top=include_top, class_num=class_num, layer_num=154, activation=activation, loss=loss)
-    # train model
     # train model
     train_resnet, history_resnet = train_model(checkpoint_path=check_point_path, save_weight_path=save_weight_mobilenet,
                                                model=mobile_model, train_data=train_data, validation_data=validation_data, step_size_train=STEP_SIZE_TRAIN, step_size_valid=STEP_SIZE_VALID, epochs_train=Epochs)
