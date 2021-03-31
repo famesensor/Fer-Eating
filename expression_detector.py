@@ -16,6 +16,10 @@ if __name__ == "__main__":
 
     image_test_Path = "./data-set/behavior/test/506.jpg"
     weight_model_vgg16 = "./models/expression/vgg16/vgg16_expression.h5"
+    weight_model_vgg19 = "./models/expression/vgg19/vgg19_expression.h5"
+    weight_model_resnet = "./models/expression/resnet/resnet_expression.h5"
+    weight_model_alexnet = "./models/expression/alexnet/alexnet_expression.h5"
+    weight_model_mobilenet = "./models/expression/mobilenet/mobilenet_expression.h5"
     include_top = True
     class_num = 8
     activation = "softmax"
@@ -41,9 +45,23 @@ if __name__ == "__main__":
     print("load weight vgg16 success...")
 
     # load model vgg19
+    vgg19 = VGG19(include_top=include_top, input_tensor=None,
+                  input_shape=(img_height, img_weight, channels))
+    model_vgg19 = setup_network(model=vgg19, include_top=include_top,
+                                class_num=class_num, layer_num=22, activation=activation, loss=loss)
+    model_vgg19.load_weights(weight_model_vgg19)
 
     # load model resnet
+    resnet = ResNet50V2(include_top=include_top, input_tensor=None,
+                        input_shape=(img_height, img_weight, channels))
+    model_resnet = setup_network(model=resnet, include_top=include_top,
+                                 class_num=class_num, layer_num=190, activation=activation, loss=loss)
+    model_resnet.load_weights(weight_model_mobilenet)
 
     # load model alexnet
 
     # load model mobilenet
+    mobilenet = MobileNetV2(include_top=include_top, input_tensor=None, input_shape=(
+        img_height, img_weight, channels))
+    model_mobile = setup_network(model=mobilenet, include_top=include_top,
+                                 class_num=class_num, layer_num=154, activation=activation, loss=loss)
