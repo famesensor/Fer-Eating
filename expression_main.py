@@ -1,5 +1,5 @@
-from expression_model import init_model_vgg16, init_model_vgg19, init_model_resnet50v2, init_model_alexnet, init_model_mobilenet, setup_network, train_model, plot_result_train_model
-from preparation import load_data_set
+from expression.expression_model import init_model_vgg16, init_model_vgg19, init_model_resnet50v2, init_model_alexnet, init_model_mobilenet, setup_network, train_model, plot_result_train_model
+from preparation.preparation import load_data_set
 
 if __name__ == "__main__":
     # init value

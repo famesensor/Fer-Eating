@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 from keras.applications.vgg16 import VGG16
 from keras.applications.vgg19 import VGG19
 from keras.applications import ResNet50V2, MobileNetV2
-from preparation import load_image
-from expression_model import setup_network
+from preparation.preparation import load_image
+from expression.expression_model import setup_network
 
 if __name__ == "__main__":
     # init value

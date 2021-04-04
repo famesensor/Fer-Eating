@@ -8,7 +8,7 @@ from keras.preprocessing.image import ImageDataGenerator
 from keras.preprocessing import image
 from keras.models import load_model
 from keras.applications.vgg16 import VGG16
-from behavior_model import setup_architechture_vgg16, setup_architechture_vgg16_2
+from behavior.behavior_model import setup_architechture_vgg16, setup_architechture_vgg16_2
 
 # init value
 img_height, img_weight = 224, 224

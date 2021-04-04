@@ -1,7 +1,7 @@
 import numpy as np
 
 from preparation import load_data_set, load_image
-from behavior_model import init_model_vgg16, setup_architechture_vgg16, setup_architechture_vgg16_2, train_model_vgg16, plot_result_train_model
+from behavior.behavior_model import init_model_vgg16, setup_architechture_vgg16, setup_architechture_vgg16_2, train_model_vgg16, plot_result_train_model
 
 if __name__ == "__main__":
     # init value
