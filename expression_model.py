@@ -34,7 +34,7 @@ def init_model_resnet50v2(include_top: bool, input_tensor, input_shape: tuple) -
     return model
 
 
-def init_model_mobilenet(include_top: bool, input_tensor, input_shape: tuple, minimalistic: bool, alpha: float, dropout_rate: float) -> Model:
+def init_model_mobilenet(include_top: bool, input_tensor, input_shape: tuple) -> Model:
     model = MobileNetV2(include_top=include_top, weights='imagenet',
                         input_tensor=None, input_shape=input_shape)
     return model
@@ -50,7 +50,7 @@ def init_model_alexnet():
     # Convolutional Layer
     # 1st Convolutional Layer
     model.add(Conv2D(filters=96, kernel_size=(11, 11), strides=(
-        4, 4), activation='relu', input_shape=(227, 227, 3)))
+        4, 4), activation='relu', input_shape=(224, 224, 3)))
     model.add(BatchNormalization())
     model.add(MaxPooling2D(pool_size=(3, 3), strides=(2, 2)))
 
