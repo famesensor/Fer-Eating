@@ -32,7 +32,7 @@ if __name__ == "__main__":
     train_data = load_data_set(
         train_datagen_args, train_data_path, (img_height, img_weight), batch_size)
     validation_data = load_data_set(
-        train_datagen_args=train_datagen_args, train_data_path=train_data_path, size_image=(img_height, img_weight), batch_size=batch_size)
+        train_datagen_args, train_data_path, (img_height, img_weight), batch_size)
 
     STEP_SIZE_TRAIN = train_data.n//train_data.batch_size
     STEP_SIZE_VALID = validation_data.n//validation_data.batch_size
