@@ -54,7 +54,7 @@ def crop(image, boxes):
         return crop_img
 
 
-def person_detect(image_path, threshold):
+def person_detect(image_path):
 
     image = cv2.imread(image_path)
     threshold = 0.5
