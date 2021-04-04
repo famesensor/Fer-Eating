@@ -65,3 +65,25 @@ if __name__ == "__main__":
         img_height, img_weight, channels))
     model_mobile = setup_network(model=mobilenet, include_top=include_top,
                                  class_num=class_num, layer_num=154, activation=activation, loss=loss)
+
+    # predict
+    print("predict...")
+    output_vgg16 = model_vgg16.predict(test_image)
+    output_vgg19 = model_vgg19.predict(test_image)
+    output_resnet = model_resnet.predict(test_image)
+    output_mobile = model_mobile.predict(test_image)
+
+    # convert result
+    res_vgg16 = np.argmax(output_vgg16)
+    res_vgg19 = np.argmax(output_vgg19)
+    res_resnet = np.argmax(output_resnet)
+    res_mobile = np.argmax(output_mobile)
+
+    print("The predicted output from model vgg16 : ",
+          dict_Label[res_vgg16], "success \n")
+    print("The predicted output from model vgg19 : ",
+          dict_Label[res_vgg19], "success \n")
+    print("The predicted output from model resnet : ",
+          dict_Label[res_resnet], "success \n")
+    print("The predicted output from model mobile : ",
+          dict_Label[res_mobile], "success \n")
