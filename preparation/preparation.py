@@ -1,5 +1,7 @@
 import numpy as np
-import numpy as np
+import os
+import random
+import shutil
 
 from keras.preprocessing.image import ImageDataGenerator
 from keras.preprocessing import image
@@ -19,3 +21,55 @@ def load_image(test_data_path: str, size_image: tuple, color_mode: str):
     test_image = image.img_to_array(test_image)
     test_image = np.expand_dims(test_image, axis=0)
     return test_image
+
+
+def random_dataset_behavior() -> None:
+    eatSource = '../dataset/behavior/train/eat'
+    eatDest = '../dataset/behavior/validate/eat'
+    eatFiles = os.listdir(eatSource)
+    eatNumberOfFiles = 700
+
+    noEatSource = '../dataset/behavior/train/noeat'
+    noEatDest = '../dataset/behavior/validate/noeat'
+    noEatFiles = os.listdir(noEatSource)
+    noEatNumberOfFiles = 1200
+
+    for file_name in random.sample(eatFiles, eatNumberOfFiles):
+        shutil.move(os.path.join(eatSource, file_name), eatDest)
+
+    for file_name in random.sample(noEatFiles, noEatNumberOfFiles):
+        shutil.move(os.path.join(noEatSource, file_name), noEatDest)
+    return
+
+
+def random_dataset_expression() -> None:
+    folder_list = [
+        "neutral",
+        "anger",
+        "contempt",
+        "disgust",
+        "fear",
+        "happy",
+        "sadness",
+        "surprise"
+    ]
+
+    # init number of files for validation
+    neutral = 883
+    anger = 162
+    contempt = 65
+    disgust = 212
+    fear = 90
+    happy = 248
+    sadness = 101
+    surprise = 299
+
+    for folder_name in folder_list:
+        source = '../dataset/expression/train/' + folder_name
+        destination = '../dataset/expression/validate/' + folder_name
+        files = os.listdir(source)
+        number_of_files = eval(folder_name)
+
+        for file_name in random.sample(files, number_of_files):
+            shutil.move(os.path.join(source, file_name), destination)
+    return
