@@ -94,7 +94,7 @@ def init_model_alexnet():
     return model
 
 
-def setup_network(model: Model, include_top: bool, class_num: int, layer_num: int, activation: str, loss: str):
+def setup_network(model: Model, include_top: bool, class_num: int, layer_num: int, activation: str, loss: str) -> Model:
     if include_top:
         for layer in model.layers[:layer_num]:
             layer.trainable = False
@@ -133,7 +133,7 @@ def train_model(checkpoint_path: str, save_weight_path: str, model: Model, train
     return model, history
 
 
-def evaluate_model_vgg16(model: Model, test_data_set):
+def evaluate_model(model: Model, test_data_set):
     score = model.evaluate(test_data_set)
     return score
 
@@ -149,3 +149,10 @@ def plot_result_train_model(history, model_name: str):
     plt.legend(["Accuracy", "Validation Accuracy", "loss", "Validation Loss"])
     plt.show()
     return
+
+
+def init_model_expression(weight_path: str) -> Model:
+    model = VGG16(include_top=True, input_tensor=None,
+                  input_shape=(224, 224, 3))
+    model.load_weights(weight_path)
+    return model
