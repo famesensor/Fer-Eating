@@ -17,7 +17,7 @@ def init_model_vgg16(include_top: bool, input_tensor, input_shape: tuple):
     return model
 
 
-def setup_architechture_vgg16(model: Model):
+def setup_architechture_vgg16(model: Model) -> Model:
     # don't train existing weights
     for layer in model.layers:
         layer.trainable = False
@@ -32,7 +32,7 @@ def setup_architechture_vgg16(model: Model):
     return new_model
 
 
-def setup_architechture_vgg16_2(model: Model):
+def setup_architechture_vgg16_2(model: Model) -> Model:
     for layers in (model.layers)[:19]:
         layers.trainable = False
 
@@ -93,3 +93,11 @@ def plot_result_train_model(history):
     plt.legend(["Accuracy", "Validation Accuracy", "loss", "Validation Loss"])
     plt.show()
     return
+
+
+def init_model_behavior(weight_path: str) -> Model:
+    model = VGG16(include_top=False, input_tensor=None,
+                  input_shape=(224, 224, 3))
+    model = setup_architechture_vgg16(model)
+    model.load_weights(weight_path)
+    return model
