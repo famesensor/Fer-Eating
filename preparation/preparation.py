@@ -1,3 +1,4 @@
+import cv2
 import numpy as np
 import os
 import random
@@ -21,6 +22,11 @@ def load_image(test_data_path: str, size_image: tuple, color_mode: str):
     test_image = image.img_to_array(test_image)
     test_image = np.expand_dims(test_image, axis=0)
     return test_image
+
+
+def load_vdo(vdo_path: str) -> cv2.VideoCapture:
+    vdocap = cv2.VideoCapture(vdo_path)
+    return vdocap
 
 
 def random_dataset_behavior() -> None:
