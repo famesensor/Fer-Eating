@@ -21,9 +21,10 @@ import time
 # image = cv2.imread(args['image'])
 # threshold = args["threshold"]
 
+# TODO: assign type parameter in func.
 
-def draw(image, boxes, confidences):
 
+def draw(image, boxes, confidences) -> list:
     for i, box in enumerate(boxes):
 
         (startX, startY) = (box[0], box[1])
@@ -42,8 +43,7 @@ def draw(image, boxes, confidences):
     cv2.waitKey(0)
 
 
-def crop(image, boxes):
-
+def crop(image: list, boxes: list) -> list:
     for i, box in enumerate(boxes):
 
         (startX, startY) = (box[0], box[1])
@@ -54,9 +54,8 @@ def crop(image, boxes):
         return crop_img
 
 
-def person_detect(image_path):
-
-    image = cv2.imread(image_path)
+def person_detect(image: list) -> list:
+    # image = cv2.imread(image_path)
     threshold = 0.5
 
     nms = 0.4  # set threshold for non maximum supression
@@ -148,9 +147,8 @@ def person_detect(image_path):
     return crop(image, boxes_new)
 
 
-def face_detect(image_path):
-
-    image = cv2.imread(image_path)
+def face_detect(image: list) -> list:
+    # image = cv2.imread(image_path)
     threshold = 0.5
 
     width = 300  # width of input image
@@ -161,7 +159,7 @@ def face_detect(image_path):
     weight = 'models/dnn/res10_300x300_ssd_iter_140000_fp16.caffemodel'
 
     # load our serialized model from disk
-    print("[INFO] loading model... for " + image_path)
+    # print("[INFO] loading model... for " + image_path)
     net = cv2.dnn.readNetFromCaffe(config, weight)
 
     # load the input image and construct an input blob for the image
