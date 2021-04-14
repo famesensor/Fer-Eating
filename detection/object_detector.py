@@ -72,7 +72,7 @@ def person_detect(image: list) -> list:
         classes = f.read().rstrip('\n').split('\n')
 
     # Read the model
-    print("[INFO] loading model...")
+    print("[INFO]: loading model person...")
     net = cv2.dnn.readNetFromDarknet(config, weight)
 
     # Get the names of output layers
@@ -85,7 +85,7 @@ def person_detect(image: list) -> list:
         image, (width, height)), 1/255, (width, height), swapRB=True, crop=False)
     net.setInput(blob)
 
-    print("[INFO] computing person detections...")
+    print("[INFO]: computing person detections...")
     start = time.time()
 
     layersOutputs = net.forward(ln)
@@ -159,7 +159,7 @@ def face_detect(image: list) -> list:
     weight = 'models/dnn/res10_300x300_ssd_iter_140000_fp16.caffemodel'
 
     # load our serialized model from disk
-    # print("[INFO] loading model... for " + image_path)
+    print("[INFO]: loading model face...")
     net = cv2.dnn.readNetFromCaffe(config, weight)
 
     # load the input image and construct an input blob for the image
@@ -171,7 +171,7 @@ def face_detect(image: list) -> list:
 
     # pass the blob through the network and obtain the detections and
     # predictions
-    print("[INFO] computing face detections...")
+    print("[INFO]: computing face detections...")
     start = time.time()
 
     detections = net.forward()
