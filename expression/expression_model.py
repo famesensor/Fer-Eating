@@ -154,5 +154,8 @@ def plot_result_train_model(history, model_name: str):
 def init_model_expression(weight_path: str) -> Model:
     model = VGG16(include_top=True, input_tensor=None,
                   input_shape=(224, 224, 3))
+    model = setup_network(model=model, include_top=True, class_num=8,
+                          layer_num=19, activation="softmax", loss="categorical_crossentropy")
     model.load_weights(weight_path)
+    print("[INFO]: init model expression model...")
     return model

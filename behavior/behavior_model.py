@@ -100,4 +100,5 @@ def init_model_behavior(weight_path: str) -> Model:
                   input_shape=(224, 224, 3))
     model = setup_architechture_vgg16(model)
     model.load_weights(weight_path)
+    print("[INFO]: init model behavior...")
     return model
