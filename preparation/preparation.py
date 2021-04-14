@@ -25,8 +25,16 @@ def load_image(test_data_path: str, size_image: tuple, color_mode: str):
 
 
 def load_vdo(vdo_path: str) -> cv2.VideoCapture:
-    vdocap = cv2.VideoCapture(vdo_path)
-    return vdocap
+    print("[INFO]: load vdo file...")
+    return cv2.VideoCapture(vdo_path)
+
+
+def resize_image(image: list, size_image: tuple) -> list:
+    return cv2.resize(src=image, dsize=size_image)
+
+
+def normalize_image(image: list) -> list:
+    return image*(1.0/255)
 
 
 def random_dataset_behavior() -> None:
