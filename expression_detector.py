@@ -7,6 +7,7 @@ from keras.applications.vgg19 import VGG19
 from keras.applications import ResNet50V2, MobileNetV2
 from preparation.preparation import load_image
 from expression.expression_model import setup_network
+from detection.object_detector import face_detect
 
 if __name__ == "__main__":
     # init value
@@ -66,24 +67,27 @@ if __name__ == "__main__":
     model_mobile = setup_network(model=mobilenet, include_top=include_top,
                                  class_num=class_num, layer_num=154, activation=activation, loss=loss)
 
-    # predict
-    print("predict...")
-    output_vgg16 = model_vgg16.predict(test_image)
-    output_vgg19 = model_vgg19.predict(test_image)
-    output_resnet = model_resnet.predict(test_image)
-    output_mobile = model_mobile.predict(test_image)
+test_image = face_detect(image=test_image)
+test_image = np.expand_dims(test_image, axis=0)
 
-    # convert result
-    res_vgg16 = np.argmax(output_vgg16)
-    res_vgg19 = np.argmax(output_vgg19)
-    res_resnet = np.argmax(output_resnet)
-    res_mobile = np.argmax(output_mobile)
+# predict
+print("predict...")
+output_vgg16 = model_vgg16.predict(test_image)
+output_vgg19 = model_vgg19.predict(test_image)
+output_resnet = model_resnet.predict(test_image)
+output_mobile = model_mobile.predict(test_image)
 
-    print("The predicted output from model vgg16 : ",
-          dict_Label[res_vgg16], "success \n")
-    print("The predicted output from model vgg19 : ",
-          dict_Label[res_vgg19], "success \n")
-    print("The predicted output from model resnet : ",
-          dict_Label[res_resnet], "success \n")
-    print("The predicted output from model mobile : ",
-          dict_Label[res_mobile], "success \n")
+# convert result
+res_vgg16 = np.argmax(output_vgg16)
+res_vgg19 = np.argmax(output_vgg19)
+res_resnet = np.argmax(output_resnet)
+res_mobile = np.argmax(output_mobile)
+
+print("The predicted output from model vgg16 : ",
+      dict_Label[res_vgg16], "success \n")
+print("The predicted output from model vgg19 : ",
+      dict_Label[res_vgg19], "success \n")
+print("The predicted output from model resnet : ",
+      dict_Label[res_resnet], "success \n")
+print("The predicted output from model mobile : ",
+      dict_Label[res_mobile], "success \n")
