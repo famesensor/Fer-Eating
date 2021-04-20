@@ -57,7 +57,7 @@ if __name__ == "__main__":
                         input_shape=(img_height, img_weight, channels))
     model_resnet = setup_network(model=resnet, include_top=include_top,
                                  class_num=class_num, layer_num=190, activation=activation, loss=loss)
-    model_resnet.load_weights(weight_model_mobilenet)
+    model_resnet.load_weights(weight_model_resnet)
 
     # load model alexnet
 
@@ -66,6 +66,7 @@ if __name__ == "__main__":
         img_height, img_weight, channels))
     model_mobile = setup_network(model=mobilenet, include_top=include_top,
                                  class_num=class_num, layer_num=154, activation=activation, loss=loss)
+    model_mobile.load_weights(weight_model_mobilenet)
 
 test_image = face_detect(image=test_image)
 test_image = np.expand_dims(test_image, axis=0)
