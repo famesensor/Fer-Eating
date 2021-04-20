@@ -25,8 +25,8 @@ if __name__ == "__main__":
     class_num = 8
     activation = "softmax"
     loss = "categorical_crossentropy"
-    dict_Label = {0: "neutral", 1: "anger",
-                  2: "contempt", 3: "disgust", 4: "fear", 5: "happy", 6: "sadness", 7: "surprise"}
+    dict_exppression = {0: "anger", 1: "contempt", 2: "disgust",
+                        3: "fear", 4: "happay", 5: "neutral", 6: "sadness", 7: "surprise"}
 
     print("expression detection....")
 
@@ -84,10 +84,10 @@ res_resnet = np.argmax(output_resnet)
 res_mobile = np.argmax(output_mobile)
 
 print("The predicted output from model vgg16 : ",
-      dict_Label[res_vgg16], "success \n")
+      dict_exppression[res_vgg16], "success \n")
 print("The predicted output from model vgg19 : ",
-      dict_Label[res_vgg19], "success \n")
+      dict_exppression[res_vgg19], "success \n")
 print("The predicted output from model resnet : ",
-      dict_Label[res_resnet], "success \n")
+      dict_exppression[res_resnet], "success \n")
 print("The predicted output from model mobile : ",
-      dict_Label[res_mobile], "success \n")
+      dict_exppression[res_mobile], "success \n")
