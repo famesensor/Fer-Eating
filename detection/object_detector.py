@@ -43,6 +43,16 @@ def draw(image, boxes, confidences) -> list:
     cv2.waitKey(0)
 
 
+def init_model_person_detect(config: str, weight: str) -> cv2.dnn:
+    print("[INFO]: init model person dectection...")
+    return cv2.dnn.readNetFromDarknet(config, weight)
+
+
+def init_model_face_detect(config: str, weight: str) -> cv2.dnn_Net:
+    print("[INFO]: init model face dectection...")
+    return cv2.dnn.readNetFromCaffe(config, weight)
+
+
 def crop(image: list, boxes: list) -> list:
     for i, box in enumerate(boxes):
 
@@ -54,7 +64,7 @@ def crop(image: list, boxes: list) -> list:
         return crop_img
 
 
-def person_detect(image: list) -> list:
+def person_detect(net: cv2.dnn, image: list) -> list:
     # image = cv2.imread(image_path)
     threshold = 0.5
 
@@ -62,9 +72,9 @@ def person_detect(image: list) -> list:
     width = 416  # width of input image
     height = 416  # height of input image
 
-    # PATH to weight and config files
-    config = 'models/yolo/yolov4.cfg'
-    weight = 'models/yolo/yolov4.weights'
+    # # PATH to weight and config files
+    # config = 'models/yolo/yolov4.cfg'
+    # weight = 'models/yolo/yolov4.weights'
 
     classesFile = "models/yolo/coco.names"
     classes = None
@@ -73,7 +83,7 @@ def person_detect(image: list) -> list:
 
     # Read the model
     print("[INFO]: loading model person...")
-    net = cv2.dnn.readNetFromDarknet(config, weight)
+    # net = cv2.dnn.readNetFromDarknet(config, weight)
 
     # Get the names of output layers
     ln = net.getLayerNames()
@@ -93,7 +103,7 @@ def person_detect(image: list) -> list:
     end = time.time()
 
     # print the time required
-    print("usage:", end - start, "sec")
+    print("[INFO]: usage {} sec".format(end - start))
 
     boxes = []
     confidences = []
@@ -147,20 +157,20 @@ def person_detect(image: list) -> list:
     return crop(image, boxes_new)
 
 
-def face_detect(image: list) -> list:
+def face_detect(net: cv2.dnn_Net, image: list) -> list:
     # image = cv2.imread(image_path)
     threshold = 0.5
 
     width = 300  # width of input image
     height = 300  # height of input image
 
-    # PATH to weight and config files
-    config = 'models/dnn/deploy.prototxt.txt'
-    weight = 'models/dnn/res10_300x300_ssd_iter_140000_fp16.caffemodel'
+    # # PATH to weight and config files
+    # config = 'models/dnn/deploy.prototxt.txt'
+    # weight = 'models/dnn/res10_300x300_ssd_iter_140000_fp16.caffemodel'
 
-    # load our serialized model from disk
-    print("[INFO]: loading model face...")
-    net = cv2.dnn.readNetFromCaffe(config, weight)
+    # # load our serialized model from disk
+    # print("[INFO]: loading model face...")
+    # net = cv2.dnn.readNetFromCaffe(config, weight)
 
     # load the input image and construct an input blob for the image
     # by resizing to a fixed 300x300 pixels and then normalizing it
@@ -179,7 +189,7 @@ def face_detect(image: list) -> list:
     end = time.time()
 
     # print the time required
-    print("usage:", end - start, "sec")
+    print("[INFO]: usage {} sec".format(end - start))
 
     detections = np.squeeze(detections)
 
