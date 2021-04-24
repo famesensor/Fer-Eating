@@ -40,10 +40,6 @@ def init_model_mobilenet(include_top: bool, input_tensor, input_shape: tuple, mi
     return model
 
 
-# def init_model_mobilenet_small(include_top: bool, input_tensor, input_shape: tuple, minimalistic: bool, alpha: float, dropout_rate: float):
-#     return
-
-
 def init_model_alexnet():
     model = models.Sequential()
 
@@ -151,11 +147,21 @@ def plot_result_train_model(history, model_name: str):
     return
 
 
-def init_model_expression(weight_path: str) -> Model:
-    model = VGG16(include_top=True, input_tensor=None,
-                  input_shape=(224, 224, 3))
-    model = setup_network(model=model, include_top=True, class_num=8,
-                          layer_num=19, activation="softmax", loss="categorical_crossentropy")
+def init_model_expression(weight_path: str, types: str, include_top: bool, img_height: int, img_weight: int, channels: int, class_num: int, layer_num: int, activation: str, loss: str) -> Model:
+    model = {
+        "vgg16": VGG16(include_top=include_top, input_tensor=None,
+                       input_shape=(img_height, img_weight, channels)),
+        "vgg19": VGG19(include_top=include_top, input_tensor=None,
+                       input_shape=(img_height, img_weight, channels)),
+        "resnet": ResNet50V2(include_top=include_top, input_tensor=None,
+                             input_shape=(img_height, img_weight, channels)),
+        "mobilenet": MobileNetV2(include_top=include_top, input_tensor=None, input_shape=(
+            img_height, img_weight, channels)),
+    }[types]
+
+    model = setup_network(model=model, include_top=include_top,
+                          class_num=class_num, layer_num=layer_num, activation=activation, loss=loss)
     model.load_weights(weight_path)
-    print("[INFO]: init model expression model...")
+    print("[INFO]: init model expression {}...".format(types))
+
     return model
