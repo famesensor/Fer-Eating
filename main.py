@@ -18,6 +18,14 @@ config_face = './models/dnn/deploy.prototxt.txt'
 weight_face = './models/dnn/res10_300x300_ssd_iter_140000_fp16.caffemodel'
 weight_behavior = "./models/behavior/vgg16_behavior_1.h5"
 weight_expression = "./models/expression/vgg16/vgg16_expression.h5"
+include_top = True
+class_num = 8
+number_frame = 0
+img_height, img_weight = 224, 224
+channels = 3  # 3 RGB
+batch_size = 32
+activation = "softmax"
+loss = "categorical_crossentropy"
 every_n_frame = 5
 flag_eat = False
 number_eat = 0
@@ -36,45 +44,46 @@ person_model = init_model_person_detect(
     config=config_person, weight=weight_person)
 face_model = init_model_face_detect(config=config_face, weight=weight_face)
 behavior_model = init_model_behavior(weight_path=weight_behavior)
-expression_model = init_model_expression(weight_path=weight_expression)
+expression_model = init_model_expression(weight_path=weight_expression, types="vgg16", include_top=include_top, img_height=img_height,
+                                         img_weight=img_weight, channels=channels, class_num=class_num, layer_num=19, activation=activation, loss=loss)
 
 # load dataset...
 vdo_path = "./dataset/test/Deep1.MOV"
 vdocap = load_vdo(vdo_path=vdo_path)
 
 
-def expression_process(image: list):
-    # person detection
-    person_res = person_detect(net=person_model, image=frame)
+# def expression_process(image: list):
+#     # person detection
+#     person_res = person_detect(net=person_model, image=frame)
 
-    # preparation data for behavior model
-    person_res = resize_image(
-        image=person_res, size_image=(img_height, img_width))
-    person_res = normalize_image(image=person_res)
-    person_res = np.expand_dims(person_res, axis=0)
+#     # preparation data for behavior model
+#     person_res = resize_image(
+#         image=person_res, size_image=(img_height, img_width))
+#     person_res = normalize_image(image=person_res)
+#     person_res = np.expand_dims(person_res, axis=0)
 
-    # behavior detection
-    print("[INFO]: computing behavior detection...")
-    b_res = behavior_model.predict(person_res)
-    b_res = np.argmax(b_res)
-    behavior_res.append([nth_frame, dict_behavior[b_res]])
+#     # behavior detection
+#     print("[INFO]: computing behavior detection...")
+#     b_res = behavior_model.predict(person_res)
+#     b_res = np.argmax(b_res)
+#     behavior_res.append([nth_frame, dict_behavior[b_res]])
 
 
-def behavior_process(image: list):
-    # face dectection
-    face_res = face_detect(net=face_model, image=frame)
+# def behavior_process(image: list):
+#     # face dectection
+#     face_res = face_detect(net=face_model, image=frame)
 
-    # preparation data for expression model
-    face_res = resize_image(
-        image=face_res, size_image=(img_height, img_width))
-    face_res = normalize_image(image=face_res)
-    face_res = np.expand_dims(face_res, axis=0)
+#     # preparation data for expression model
+#     face_res = resize_image(
+#         image=face_res, size_image=(img_height, img_width))
+#     face_res = normalize_image(image=face_res)
+#     face_res = np.expand_dims(face_res, axis=0)
 
-    # expression recognition
-    print("[INFO]: computing expression detection...")
-    e_res = expression_model.predict(face_res)
-    e_res = np.argmax(e_res)
-    expression_res.append([nth_frame, dict_exppression[e_res]])
+#     # expression recognition
+#     print("[INFO]: computing expression detection...")
+#     e_res = expression_model.predict(face_res)
+#     e_res = np.argmax(e_res)
+#     expression_res.append([nth_frame, dict_exppression[e_res]])
 
 
 if __name__ == "__main__":
@@ -145,58 +154,58 @@ if __name__ == "__main__":
 
     # TODO: plot result
 
-    # multiprocess
-    while True:
-        nth_frame = vdocap.get(cv2.CAP_PROP_POS_FRAMES)
-        ret, frame = vdocap.read()
+    # # multiprocess
+    # while True:
+    #     nth_frame = vdocap.get(cv2.CAP_PROP_POS_FRAMES)
+    #     ret, frame = vdocap.read()
 
-        if not ret:
-            break
+    #     if not ret:
+    #         break
 
-        print("[INFO]: skip frame : {}".format(every_n_frame))
-        if nth_frame % every_n_frame == 0:
-            print("[INFO]: frame no. {}".format(nth_frame))
+    #     print("[INFO]: skip frame : {}".format(every_n_frame))
+    #     if nth_frame % every_n_frame == 0:
+    #         print("[INFO]: frame no. {}".format(nth_frame))
 
-            # creating processes
-            p1 = multiprocessing.Process(target=behavior_process, args=(frame))
-            p2 = multiprocessing.Process(
-                target=expression_process, args=(frame))
+    #         # creating processes
+    #         p1 = multiprocessing.Process(target=behavior_process, args=(frame))
+    #         p2 = multiprocessing.Process(
+    #             target=expression_process, args=(frame))
 
-            # starting processes
-            p1.start()
-            p2.start()
+    #         # starting processes
+    #         p1.start()
+    #         p2.start()
 
-            # process IDs
-            print("ID of process p1: {}".format(p1.pid))
-            print("ID of process p2: {}".format(p2.pid))
+    #         # process IDs
+    #         print("ID of process p1: {}".format(p1.pid))
+    #         print("ID of process p2: {}".format(p2.pid))
 
-            # wait until processes are finished
-            p1.join()
-            p2.join()
+    #         # wait until processes are finished
+    #         p1.join()
+    #         p2.join()
 
-            # both processes finished
-            print("Both processes finished execution!")
+    #         # both processes finished
+    #         print("Both processes finished execution!")
 
-            # check if processes are alive
-            print("Process p1 is alive: {}".format(p1.is_alive()))
-            print("Process p2 is alive: {}".format(p2.is_alive()))
-            print(behavior_res)
+    #         # check if processes are alive
+    #         print("Process p1 is alive: {}".format(p1.is_alive()))
+    #         print("Process p2 is alive: {}".format(p2.is_alive()))
+    #         print(behavior_res)
 
-            # # condition for change step frame rate
-            # if behavior_res[index] == 0:
-            #     if not flag_eat and number_eat == 0:
-            #         print(
-            #             "[INFO]: first eating in video frame on. {}".format(nth_frame))
-            #         flag_eat = True
-            #         number_eat = 1
-            #         every_n_frame = 1
-            #         frame_start_eat = nth_frame
-            # if flag_eat and number_eat == 1:
-            #     print("[INFO]: after first eating...")
-            #     count_step += 1
-            # if count_step == 100:
-            #     print("[INFO]: change skip frame to default...")
-            #     frame_end_eat = nth_frame
-            #     every_n_frame = 5
+    #         # # condition for change step frame rate
+    #         # if behavior_res[index] == 0:
+    #         #     if not flag_eat and number_eat == 0:
+    #         #         print(
+    #         #             "[INFO]: first eating in video frame on. {}".format(nth_frame))
+    #         #         flag_eat = True
+    #         #         number_eat = 1
+    #         #         every_n_frame = 1
+    #         #         frame_start_eat = nth_frame
+    #         # if flag_eat and number_eat == 1:
+    #         #     print("[INFO]: after first eating...")
+    #         #     count_step += 1
+    #         # if count_step == 100:
+    #         #     print("[INFO]: change skip frame to default...")
+    #         #     frame_end_eat = nth_frame
+    #         #     every_n_frame = 5
 
-            # index += 1
+    #         # index += 1
