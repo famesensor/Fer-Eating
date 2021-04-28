@@ -8,6 +8,8 @@ from keras.layers import Dense, Flatten, Input
 from keras import optimizers
 from keras.models import Model
 from keras.applications.vgg16 import VGG16
+from keras.applications.vgg19 import VGG19
+from keras.applications import ResNet50V2, MobileNetV2
 from keras.models import Sequential
 
 
@@ -17,35 +19,55 @@ def init_model_vgg16(include_top: bool, input_tensor, input_shape: tuple):
     return model
 
 
-def setup_architechture_vgg16(model: Model) -> Model:
-    # don't train existing weights
-    for layer in model.layers:
-        layer.trainable = False
+def init_model_train_behavior(types: str, include_top: bool, img_height: int, img_weight: int, channels: int, class_num: int, layer_num: int, activation: str, loss: str) -> Model:
+    model = {
+        "vgg16": VGG16(include_top=include_top, input_tensor=None, weights='imagenet',
+                       input_shape=(img_height, img_weight, channels)),
+        "vgg19": VGG19(include_top=include_top, input_tensor=None, weights='imagenet',
+                       input_shape=(img_height, img_weight, channels)),
+        "resnet": ResNet50V2(include_top=include_top, input_tensor=None, weights='imagenet',
+                             input_shape=(img_height, img_weight, channels)),
+        "mobilenet": MobileNetV2(include_top=include_top, input_tensor=None, weights='imagenet', input_shape=(
+            img_height, img_weight, channels)),
+    }[types]
 
-    x = Flatten()(model.output)
-    prediction = Dense(2, activation='softmax')(x)
+    model = setup_network(model=model, include_top=include_top,
+                          class_num=class_num, layer_num=layer_num, activation=activation, loss=loss)
+    print("[INFO]: init model behavior {}...".format(types))
+
+    return model
+
+
+# def setup_architechture_vgg16(model: Model) -> Model:
+#     # don't train existing weights
+#     for layer in model.layers:
+#         layer.trainable = False
+
+#     x = Flatten()(model.output)
+#     prediction = Dense(2, activation='softmax')(x)
+#     new_model = Model(inputs=model.input, outputs=prediction)
+#     new_model.compile(loss='categorical_crossentropy',
+#                       optimizer=optimizers.Adam(),
+#                       metrics=['accuracy'])
+#     # new_model.summary()
+#     return new_model
+
+
+def setup_network(model: Model, include_top: bool, class_num: int, layer_num: int, activation: str, loss: str) -> Model:
+    if include_top:
+        for layer in model.layers[:layer_num]:
+            layer.trainable = False
+        x = model.layers[-2].output
+        prediction = Dense(class_num, activation=activation)(x)
+
     new_model = Model(inputs=model.input, outputs=prediction)
-    new_model.compile(loss='categorical_crossentropy',
+    new_model.compile(loss=loss,
                       optimizer=optimizers.Adam(),
                       metrics=['accuracy'])
-    # new_model.summary()
     return new_model
 
 
-def setup_architechture_vgg16_2(model: Model) -> Model:
-    for layers in (model.layers)[:19]:
-        layers.trainable = False
-
-    X = model.layers[-2].output
-    predictions = Dense(2, activation="softmax")(X)
-    new_model = Model(inputs=model.input, outputs=predictions)
-    new_model.compile(loss="categorical_crossentropy",
-                      optimizer=optimizers.Adam(), metrics=["accuracy"])
-    # new_model.summary()
-    return new_model
-
-
-def train_model_vgg16(checkpoint_path: str, save_weights_path: str, model: Model,  train_data, validation_data, step_size_train, step_size_valid, epochs_train: int):
+def train_model(checkpoint_path: str, save_weights_path: str, model: Model,  train_data, validation_data, step_size_train, step_size_valid, epochs_train: int):
     checkpoint = ModelCheckpoint(checkpoint_path, monitor='val_acc', verbose=1,
                                  save_best_only=True, save_weights_only=False, mode='auto', period=1)
 
@@ -82,12 +104,12 @@ def evaluate_model_vgg16(model: Model, test_data_set):
     return score
 
 
-def plot_result_train_model(history):
+def plot_result_train_model(history, model_name: str):
     plt.plot(history.history["acc"])
     plt.plot(history.history['val_acc'])
     plt.plot(history.history['loss'])
     plt.plot(history.history['val_loss'])
-    plt.title("model accuracy")
+    plt.title(model_name)
     plt.ylabel("Accuracy")
     plt.xlabel("Epoch")
     plt.legend(["Accuracy", "Validation Accuracy", "loss", "Validation Loss"])
@@ -95,10 +117,20 @@ def plot_result_train_model(history):
     return
 
 
-def init_model_behavior(weight_path: str) -> Model:
-    model = VGG16(include_top=False, input_tensor=None,
-                  input_shape=(224, 224, 3))
-    model = setup_architechture_vgg16(model)
+def init_model_behavior(weight_path: str, types: str, include_top: bool, img_height: int, img_weight: int, channels: int, class_num: int, layer_num: int, activation: str, loss: str) -> Model:
+    model = {
+        "vgg16": VGG16(include_top=include_top, input_tensor=None,
+                       input_shape=(img_height, img_weight, channels)),
+        "vgg19": VGG19(include_top=include_top, input_tensor=None,
+                       input_shape=(img_height, img_weight, channels)),
+        "resnet": ResNet50V2(include_top=include_top, input_tensor=None,
+                             input_shape=(img_height, img_weight, channels)),
+        "mobilenet": MobileNetV2(include_top=include_top, input_tensor=None, input_shape=(
+            img_height, img_weight, channels)),
+    }[types]
+
+    model = setup_network(model=model, include_top=include_top,
+                          class_num=class_num, layer_num=layer_num, activation=activation, loss=loss)
     model.load_weights(weight_path)
-    print("[INFO]: init model behavior...")
+    print("[INFO]: init model behavior {}...".format(types))
     return model
