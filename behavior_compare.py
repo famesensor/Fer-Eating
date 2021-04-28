@@ -6,7 +6,7 @@ from datetime import datetime
 
 from behavior.behavior_model import init_model_behavior
 from detection.object_detector import init_model_person_detect, person_detect
-from preparation.preparation import resize_image, normalize_image
+from preparation.preparation import resize_image, normalize_image, load_data_set
 
 if __name__ == "__main__":
     # init value
@@ -39,8 +39,8 @@ if __name__ == "__main__":
     resnet = init_model_behavior(weight_path=weight_model_vgg16, types="vgg19", include_top=include_top, img_height=img_height,
                                  img_weight=img_weight, channels=channels, class_num=class_num, layer_num=190, activation=activation, loss=loss)
 
-    mobilenet = init_model_behavior(weight_path=weight_model_vgg16, types="mobilenet", include_top=include_top, img_height=img_height,
-                                    img_weight=img_weight, channels=channels, class_num=class_num, layer_num=154, activation=activation, loss=loss)
+    mobile_net = init_model_behavior(weight_path=weight_model_vgg16, types="mobilenet", include_top=include_top, img_height=img_height,
+                                     img_weight=img_weight, channels=channels, class_num=class_num, layer_num=154, activation=activation, loss=loss)
 
     print("[INFO]: compare time model expression...")
     start = datetime.now()
@@ -48,9 +48,10 @@ if __name__ == "__main__":
     print("[INFO]: start time predict vgg16: ", start)
     images = glob.glob(data_time_path)
     res_predict = []
+    test_data = []
     for image_path in images:
         image = cv2.imread(image_path)
-
+        test_data.append(image)
         # face dectection
         person_res = person_detect(net=person_detect, image=image)
 
@@ -64,3 +65,24 @@ if __name__ == "__main__":
         # res_predict.append(vgg19.predict(face_res))
         # res_predict.append(resnet.predict(face_res))
         # res_predict.append(mobile_net.predict(face_res))
+
+     # Time elapsed
+    end = time.time()
+    duration = datetime.now() - start
+    print("[INFO]: time predict vgg16 : ", duration)
+    seconds = end - startTime
+    fps = len(images)/seconds
+    print("[INFO]: Estimated frames per second : {0}".format(fps))
+
+    print("[INFO]: compare evaluate model expression...")
+    # test_data = load_data_set(
+    #     test_datagen_args, data_evalute_path, (img_height, img_weight), batch_size)
+
+    # vgg16_evaluate[0] is loss, vgg16_evaluate[1] is accreency
+    vgg16_evaluate = vgg16.evaluate(test_data)
+
+    vgg19_evaluate = vgg19.evaluate(test_data)
+
+    resnet_evaluate = resnet.evaluate(test_data)
+
+    mobile_evaluate = mobile_net.evaluate(test_data)
