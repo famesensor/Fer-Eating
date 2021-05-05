@@ -24,7 +24,11 @@ if __name__ == "__main__":
     class_num = 2
     activation = "softmax"
     loss = "categorical_crossentropy"
-    data_time_path = './dataset/unlabel/*.png'
+    data_time_path = './dataset/behavior/test_time/'
+    data_evalute_path = './dataset/behavior/validate/'
+    test_datagen_args = dict(
+        rescale=1./255
+    )
 
     # init model...
     person_model = init_model_person_detect(
@@ -75,8 +79,8 @@ if __name__ == "__main__":
     print("[INFO]: Estimated frames per second : {0}".format(fps))
 
     print("[INFO]: compare evaluate model expression...")
-    # test_data = load_data_set(
-    #     test_datagen_args, data_evalute_path, (img_height, img_weight), batch_size)
+    test_data = load_data_set(
+        test_datagen_args, data_evalute_path, (img_height, img_weight), batch_size)
 
     # vgg16_evaluate[0] is loss, vgg16_evaluate[1] is accreency
     vgg16_evaluate = vgg16.evaluate(test_data)
