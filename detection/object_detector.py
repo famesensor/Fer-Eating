@@ -82,7 +82,7 @@ def person_detect(net: cv2.dnn, image: list) -> list:
         classes = f.read().rstrip('\n').split('\n')
 
     # Read the model
-    print("[INFO]: loading model person...")
+    # print("[INFO]: loading model person...")
     # net = cv2.dnn.readNetFromDarknet(config, weight)
 
     # Get the names of output layers
@@ -95,7 +95,7 @@ def person_detect(net: cv2.dnn, image: list) -> list:
         image, (width, height)), 1/255, (width, height), swapRB=True, crop=False)
     net.setInput(blob)
 
-    print("[INFO]: computing person detections...")
+    # print("[PERSON]: computing person detections...")
     start = time.time()
 
     layersOutputs = net.forward(ln)
@@ -103,7 +103,7 @@ def person_detect(net: cv2.dnn, image: list) -> list:
     end = time.time()
 
     # print the time required
-    print("[INFO]: usage {} sec".format(end - start))
+    # print("[INFO]: usage {} sec".format(end - start))
 
     boxes = []
     confidences = []
@@ -181,7 +181,7 @@ def face_detect(net: cv2.dnn_Net, image: list) -> list:
 
     # pass the blob through the network and obtain the detections and
     # predictions
-    print("[INFO]: computing face detections...")
+    # print("[FACE]: computing face detections...")
     start = time.time()
 
     detections = net.forward()
@@ -189,7 +189,7 @@ def face_detect(net: cv2.dnn_Net, image: list) -> list:
     end = time.time()
 
     # print the time required
-    print("[INFO]: usage {} sec".format(end - start))
+    # print("[INFO]: usage {} sec".format(end - start))
 
     detections = np.squeeze(detections)
 
