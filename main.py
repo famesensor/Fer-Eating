@@ -67,10 +67,12 @@ if __name__ == "__main__":
     number_eat = 0
     count_step = 0
     dict_exppression = {0: "anger", 1: "contempt", 2: "disgust",
-                        3: "fear", 4: "happay", 5: "neutral", 6: "sadness", 7: "surprise"}
+                        3: "fear", 4: "happy", 5: "neutral", 6: "sadness", 7: "surprise"}
     dict_behavior = {0: "eat", 1: "noeat"}
     behavior_res = []
     expression_res = []
+    image_res = []
+    interest_area = []
     frame_start_eat = 0
     frame_end_eat = 0
     img_height, img_width = 224, 224
@@ -98,8 +100,9 @@ if __name__ == "__main__":
         if not ret:
             break
 
-        print("[INFO]: skip frame : {}".format(every_n_frame))
+        print("[INFO]: skipped {} frame".format(every_n_frame))
         if nth_frame % every_n_frame == 0:
+            print("==============================================\n")
             print("[INFO]: frame no. {}".format(nth_frame))
             # preparation data
             # TODO: resize frame and normalization
@@ -114,13 +117,12 @@ if __name__ == "__main__":
             person_res = np.expand_dims(person_res, axis=0)
 
             # behavior detection
-            print("[INFO]: computing behavior detection...")
             b_res = behavior_model.predict(person_res)
             b_res = np.argmax(b_res)
 
             # condition for change step frame rate
             if b_res == 0:
-                if not flag_eat and number_eat == 0:
+                if not flag_eat:
                     print(
                         "[INFO]: first eating in video frame on. {}".format(nth_frame))
                     flag_eat = True
@@ -130,17 +132,25 @@ if __name__ == "__main__":
 
                     file_name = './export/export_first_frame_eat_' + \
                         str(nth_frame)+'.jpg'
+                    image_res.append([nth_frame, file_name])
                     cv2.imwrite(file_name, frame)
 
-            if flag_eat and number_eat == 1:
-                print("[INFO]: after first eating...")
+            if flag_eat:
+                print("[INFO]: eating...")
                 count_step += 1
-            if count_step == 100:
+
+            if count_step == 50:
                 print("[INFO]: change skip frame to default...")
+                count_step = 0
+                flag_eat = False
                 frame_end_eat = nth_frame
                 every_n_frame = 5
 
+            if(every_n_frame == 1):
+                interest_area.append([nth_frame, every_n_frame])
+
             behavior_res.append([nth_frame, dict_behavior[b_res]])
+            print(f"[BEHAVIOR]: {dict_behavior[b_res]}")
 
             # face dectection
             face_res = face_detect(net=face_model, image=frame)
@@ -152,10 +162,11 @@ if __name__ == "__main__":
             face_res = np.expand_dims(face_res, axis=0)
 
             # expression recognition
-            print("[INFO]: computing expression detection...")
             e_res = expression_model.predict(face_res)
             e_res = np.argmax(e_res)
             expression_res.append([nth_frame, dict_exppression[e_res]])
+            print(f"[EXPRESSION]: {dict_exppression[e_res]}")
+            print("\n==============================================")
 
     # TODO: plot result
 
