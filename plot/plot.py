@@ -1,7 +1,7 @@
 import plotly.express as px
 import plotly.graph_objects as go
 import base64
-from plot_preparation import prepare_dataframe, group_expression_level, group_interest_area
+from plot.plot_preparation import prepare_dataframe, group_expression_level, group_interest_area
 
 
 def plot_graph(expression_data, behavior_data, image_data, interest_area_data):
