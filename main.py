@@ -10,6 +10,7 @@ from detection.object_detector import person_detect, face_detect, init_model_per
 from preparation.preparation import load_image, load_vdo, resize_image, normalize_image
 from behavior.behavior_model import init_model_behavior
 from expression.expression_model import init_model_expression
+from plot.plot import plot_graph
 
 if __name__ == "__main__":
     # init values...
@@ -92,7 +93,7 @@ if __name__ == "__main__":
                     every_n_frame = 1
                     frame_start_eat = nth_frame
 
-                    file_name = './export/export_first_frame_eat_' + \
+                    file_name = '../export/export_first_frame_eat_' + \
                         str(nth_frame)+'.jpg'
                     image_res.append([nth_frame, file_name])
                     cv2.imwrite(file_name, frame)
@@ -131,3 +132,5 @@ if __name__ == "__main__":
             print("\n==============================================")
 
     # TODO: plot result
+    plot_graph(expression_data=expression_res, behavior_data=behavior_res,
+               image_data=image_res, interest_area_data=interest_area)
