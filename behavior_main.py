@@ -1,7 +1,7 @@
 import numpy as np
 
 from preparation.preparation import load_data_set, load_image
-from behavior.behavior_model import init_model_train_behavior, train_model, plot_result_train_model
+from behavior.behavior_model import init_model_train_behavior, train_model, plot_result_train_model, init_model_vgg16, init_model_vgg19, init_model_resnet50v2, init_model_mobilenet, setup_network
 
 if __name__ == "__main__":
     # init value
@@ -30,42 +30,50 @@ if __name__ == "__main__":
         height_shift_range=0.2,
         horizontal_flip=True
     )
-    test_datagen_args = dict(
-        rescale=1./255
-    )
+    # test_datagen_args = dict(
+    #     rescale=1./255
+    # )
 
     # load data set train,test and validate
+    print("load data...")
     train_data = load_data_set(
         train_datagen_args, train_data_path, (img_height, img_weight), batch_size)
     validation_data = load_data_set(
         train_datagen_args, validation_data_path, (img_height, img_weight), batch_size)
-    # test_data = load_data_set(
-    #     test_datagen_args, test_data_path, (img_height, img_weight), batch_size)
 
     STEP_SIZE_TRAIN = train_data.n//train_data.batch_size
     STEP_SIZE_VALID = validation_data.n//validation_data.batch_size
-    # STEP_SIZE_TEST = test_data.n // test_data.batch_size
+    print("load data end...")
 
-    vgg16 = init_model_train_behavior(types="vgg16", include_top=include_top, img_height=img_height,
-                                      img_weight=img_weight, channels=channels, class_num=class_num, layer_num=19, activation=activation, loss=loss)
-    vgg16_res, history_vgg16 = train_model(checkpoint_path=check_point_path+"vgg16_best.h5", save_weights_path=save_weight_vgg16_path, model=vgg16, train_data=train_data,
+    # vgg16 = init_model_train_behavior(types="vgg16", include_top=include_top, img_height=img_height,
+    #                                   img_weight=img_weight, channels=channels, class_num=class_num, layer_num=19, activation=activation, loss=loss)
+    print("vgg16 model start...")
+    vgg16_model = init_model_vgg16(include_top=include_top, input_tensor=None, input_shape=(
+        img_height, img_weight, channels))
+    # setup network
+    vgg16_model = setup_network(
+        model=vgg16_model, include_top=include_top, class_num=class_num, layer_num=19, activation=activation, loss=loss)
+    vgg16_res, history_vgg16 = train_model(checkpoint_path=check_point_path+"vgg16_best.h5", save_weights_path=save_weight_vgg16_path, model=vgg16_model, train_data=train_data,
                                            validation_data=validation_data, step_size_train=STEP_SIZE_TRAIN, step_size_valid=STEP_SIZE_VALID, epochs_train=Epochs)
-    plot_result_train_model(history_vgg16, "vgg16")
+    # plot result trian model
+    plot_result_train_model(history=history_vgg16,
+                            model_name="vgg16 accurency")
+    print("vgg16 model end...")
 
-    vgg19 = init_model_train_behavior(types="vgg19", include_top=include_top, img_height=img_height,
-                                      img_weight=img_weight, channels=channels, class_num=class_num, layer_num=22, activation=activation, loss=loss)
-    vgg19_res, history_vgg19 = train_model(checkpoint_path=check_point_path+"vgg19_best.h5", save_weights_path=save_weight_vgg19_path, model=vgg19, train_data=train_data,
-                                           validation_data=validation_data, step_size_train=STEP_SIZE_TRAIN, step_size_valid=STEP_SIZE_VALID, epochs_train=Epochs)
-    plot_result_train_model(history_vgg19, "vgg19")
+    # # vgg19 = init_model_train_behavior(types="vgg19", include_top=include_top, img_height=img_height,
+    # #                                   img_weight=img_weight, channels=channels, class_num=class_num, layer_num=22, activation=activation, loss=loss)
+    # vgg19_res, history_vgg19 = train_model(checkpoint_path=check_point_path+"vgg19_best.h5", save_weights_path=save_weight_vgg19_path, model=vgg19, train_data=train_data,
+    #                                        validation_data=validation_data, step_size_train=STEP_SIZE_TRAIN, step_size_valid=STEP_SIZE_VALID, epochs_train=Epochs)
+    # plot_result_train_model(history_vgg19, "vgg19")
 
-    resnet = init_model_train_behavior(types="resnet", include_top=include_top, img_height=img_height,
-                                       img_weight=img_weight, channels=channels, class_num=class_num, layer_num=190, activation=activation, loss=loss)
-    resnet_res, history_resnet = train_model(checkpoint_path=check_point_path+"resnet_best.h5", save_weights_path=save_weight_resnet_path, model=resnet, train_data=train_data,
-                                             validation_data=validation_data, step_size_train=STEP_SIZE_TRAIN, step_size_valid=STEP_SIZE_VALID, epochs_train=Epochs)
-    plot_result_train_model(history_resnet, "resnet")
+    # # resnet = init_model_train_behavior(types="resnet", include_top=include_top, img_height=img_height,
+    # #                                    img_weight=img_weight, channels=channels, class_num=class_num, layer_num=190, activation=activation, loss=loss)
+    # resnet_res, history_resnet = train_model(checkpoint_path=check_point_path+"resnet_best.h5", save_weights_path=save_weight_resnet_path, model=resnet, train_data=train_data,
+    #                                          validation_data=validation_data, step_size_train=STEP_SIZE_TRAIN, step_size_valid=STEP_SIZE_VALID, epochs_train=Epochs)
+    # plot_result_train_model(history_resnet, "resnet")
 
-    mobile_net = init_model_train_behavior(types="mobilenet", include_top=include_top, img_height=img_height,
-                                           img_weight=img_weight, channels=channels, class_num=class_num, layer_num=154, activation=activation, loss=loss)
-    mobile_net_res, history_mobile_net = train_model(checkpoint_path=check_point_path+"mobilenet_best.h5", save_weights_path=save_weight_mobilenet_path, model=mobile_net, train_data=train_data,
-                                                     validation_data=validation_data, step_size_train=STEP_SIZE_TRAIN, step_size_valid=STEP_SIZE_VALID, epochs_train=Epochs)
-    plot_result_train_model(history_mobile_net, "mobilenet")
+    # # mobile_net = init_model_train_behavior(types="mobilenet", include_top=include_top, img_height=img_height,
+    # #                                        img_weight=img_weight, channels=channels, class_num=class_num, layer_num=154, activation=activation, loss=loss)
+    # mobile_net_res, history_mobile_net = train_model(checkpoint_path=check_point_path+"mobilenet_best.h5", save_weights_path=save_weight_mobilenet_path, model=mobile_net, train_data=train_data,
+    #                                                  validation_data=validation_data, step_size_train=STEP_SIZE_TRAIN, step_size_valid=STEP_SIZE_VALID, epochs_train=Epochs)
+    # plot_result_train_model(history_mobile_net, "mobilenet")
