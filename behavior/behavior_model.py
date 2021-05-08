@@ -13,9 +13,27 @@ from keras.applications import ResNet50V2, MobileNetV2
 from keras.models import Sequential
 
 
-def init_model_vgg16(include_top: bool, input_tensor, input_shape: tuple):
+def init_model_vgg16(include_top: bool, input_tensor, input_shape: tuple) -> Model:
     model = VGG16(include_top=include_top, weights='imagenet',
                   input_tensor=None, input_shape=input_shape)
+    return model
+
+
+def init_model_vgg19(include_top: bool, input_tensor, input_shape: tuple) -> Model:
+    model = VGG19(include_top=include_top, weights='imagenet',
+                  input_tensor=None, input_shape=input_shape)
+    return model
+
+
+def init_model_resnet50v2(include_top: bool, input_tensor, input_shape: tuple) -> Model:
+    model = ResNet50V2(include_top=include_top, weights='imagenet',
+                       input_tensor=None, input_shape=input_shape)
+    return model
+
+
+def init_model_mobilenet(include_top: bool, input_tensor, input_shape: tuple, minimalistic: bool, alpha: float, dropout_rate: float) -> Model:
+    model = MobileNetV2(include_top=include_top, weights='imagenet',
+                        input_tensor=None, input_shape=input_shape)
     return model
 
 
