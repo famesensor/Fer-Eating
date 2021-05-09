@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 
 from behavior.behavior_model import init_model_behavior
-from detection.object_detector import init_model_person_detect, person_detect
+# from detection.object_detector import init_model_person_detect, person_detect
+from detection.yolo_detector import init_model_person, person_detect
 from preparation.preparation import resize_image, normalize_image, load_data_set
 from sklearn.metrics import confusion_matrix
 from mlxtend.plotting import plot_confusion_matrix
@@ -39,9 +40,9 @@ if __name__ == "__main__":
     )
 
     # init model...
-    person_model = init_model_person_detect(
-        config=config_person, weight=weight_person)
-
+    # person_model = init_model_person_detect(
+    #     config=config_person, weight=weight_person)
+    person_model = init_model_person("./models/yolov4-tensorflow")
     # vgg16 = init_model_behavior(weight_path=weight_model_vgg16, types="vgg16", include_top=include_top, img_height=img_height,
     #                             img_weight=img_weight, channels=channels, class_num=class_num, layer_num=19, activation=activation, loss=loss)
 
@@ -61,29 +62,35 @@ if __name__ == "__main__":
     images = glob.glob(data_time_path)
     res_predict = []
     test_data = []
+    index = 0
     for image_path in images:
         image = cv2.imread(image_path)
+        if index == 1:
+            break
+
         # if image == []:
         #     continue
         # test_data.append(image)
         # face dectection
-        person_res = person_detect(net=person_model, image=image)
-        if not person_res.any() :
+        person_res = person_detect(image_path, person_model)
+        # person_res = person_detect(net=person_model, image=image)
+        if not person_res.any():
             continue
-        
-        # preparation data for expression model
-        # print(person_res)
-        person_res = resize_image(
-            image=person_res, size_image=(img_height, img_weight))
-        person_res = normalize_image(image=person_res)
-        person_res = np.expand_dims(person_res, axis=0)
-        # print(person_res.shape)
 
-        # res_predict.append(vgg16.predict(person_res))
-        res_predict.append(vgg19.predict(person_res))
-        # res_predict.append(resnet.predict(person_res))
-        # res_predict.append(mobile_net.predict(person_res))
+        # # preparation data for expression model
+        # # print(person_res)
+        # person_res = resize_image(
+        #     image=person_res, size_image=(img_height, img_weight))
+        # person_res = normalize_image(image=person_res)
+        # person_res = np.expand_dims(person_res, axis=0)
+        # # print(person_res.shape)
+
+        # # res_predict.append(vgg16.predict(person_res))
+        # res_predict.append(vgg19.predict(person_res))
+        # # res_predict.append(resnet.predict(person_res))
+        # # res_predict.append(mobile_net.predict(person_res))
         print(image_path)
+        index += 1
 
      # Time elapsed
     end = time.time()
@@ -93,40 +100,42 @@ if __name__ == "__main__":
     fps = len(images)/seconds
     print("[INFO]: Estimated frames per second : {0}".format(fps))
 
-    # print("[INFO]: compare evaluate model expression...")
-    test_data = load_data_set(
-        test_datagen_args, data_evalute_path, (img_height, img_weight), batch_size)
+    # # print("[INFO]: compare evaluate model expression...")
+    # test_data = load_data_set(
+    #     test_datagen_args, data_evalute_path, (img_height, img_weight), batch_size)
 
-    # vgg16_evaluate[0] is loss, vgg16_evaluate[1] is accreency
-    # vgg16_evaluate = vgg16.evaluate(test_data)
+    # # vgg16_evaluate[0] is loss, vgg16_evaluate[1] is accreency
+    # # vgg16_evaluate = vgg16.evaluate(test_data)
 
-    vgg19_evaluate = vgg19.evaluate(test_data)
+    # vgg19_evaluate = vgg19.evaluate(test_data)
 
-    # resnet_evaluate = resnet.evaluate(test_data)
+    # # resnet_evaluate = resnet.evaluate(test_data)
 
-    # mobile_evaluate = mobile_net.evaluate(test_data)
-    
-    # Evaluation on test dataset
-    print("test loss, test acc:", vgg19_evaluate)
-    
-       
-    # Plot the confusion matrix
-    test_logits = vgg19.predict(test_data)
-    rounded_labels=np.argmax(test_logits, axis=1)
+    # # mobile_evaluate = mobile_net.evaluate(test_data)
 
-    cm  = confusion_matrix(test_data.classes, np.round(rounded_labels))
-    class_names=['eat', 'dont eat']
-    # Plot Non-Normalized
-    plot_confusion_matrix(cm, class_names=class_names)
-    # Plot Normalized
-    plot_confusion_matrix(cm, show_absolute=False, show_normed=True, class_names=class_names)
-    plt.show()
- 
-    print("Accuracy Score :", accuracy_score(test_data.labels, rounded_labels))
-   
-    print("Recall Score : ", recall_score(test_data.labels, rounded_labels, average='macro'))
- 
-    print("Precision Score : ", precision_score(test_data.labels, rounded_labels, average='macro'))
- 
-    print("F1 Score : ", f1_score(test_data.labels, rounded_labels, average='macro'))
+    # # Evaluation on test dataset
+    # print("test loss, test acc:", vgg19_evaluate)
 
+    # # Plot the confusion matrix
+    # test_logits = vgg19.predict(test_data)
+    # rounded_labels = np.argmax(test_logits, axis=1)
+
+    # cm = confusion_matrix(test_data.classes, np.round(rounded_labels))
+    # class_names = ['eat', 'dont eat']
+    # # Plot Non-Normalized
+    # plot_confusion_matrix(cm, class_names=class_names)
+    # # Plot Normalized
+    # plot_confusion_matrix(cm, show_absolute=False,
+    #                       show_normed=True, class_names=class_names)
+    # plt.show()
+
+    # print("Accuracy Score :", accuracy_score(test_data.labels, rounded_labels))
+
+    # print("Recall Score : ", recall_score(
+    #     test_data.labels, rounded_labels, average='macro'))
+
+    # print("Precision Score : ", precision_score(
+    #     test_data.labels, rounded_labels, average='macro'))
+
+    # print("F1 Score : ", f1_score(
+    #     test_data.labels, rounded_labels, average='macro'))
