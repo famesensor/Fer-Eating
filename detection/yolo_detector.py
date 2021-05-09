@@ -15,8 +15,7 @@ if len(physical_devices) > 0:
 def init_model_person(weight_path: str):
     saved_model_loaded = tf.saved_model.load(
         weight_path, tags=[tag_constants.SERVING])
-    infer = saved_model_loaded.signatures['serving_default']
-    return infer
+    return saved_model_loaded
 
 
 def read_class_names(class_file_name):
@@ -53,31 +52,30 @@ def crop_image(image, bboxes, classes=read_class_names('./models/yolo/coco.names
         score = out_scores[0][i]
         class_ind = int(out_classes[0][i])
         if classes[class_ind] == "person":
-            print(class_ind, score, classes[class_ind])
-            fontScale = 0.5
-            bbox_color = colors[class_ind]
-            bbox_thick = int(0.6 * (image_h + image_w) / 600)
-            c1, c2 = (coor[1], coor[0]), (coor[3], coor[2])
-            cv2.rectangle(image, c1, c2, bbox_color, bbox_thick)
+            # print(class_ind, score, classes[class_ind])
+            # fontScale = 0.5
+            # bbox_color = colors[class_ind]
+            # bbox_thick = int(0.6 * (image_h + image_w) / 600)
+            # c1, c2 = (coor[1], coor[0]), (coor[3], coor[2])
+            # cv2.rectangle(image, c1, c2, bbox_color, bbox_thick)
             image = image[coor[0]: coor[2], coor[1]:coor[3]]
-            # cv2.imwrite('./file-crop.png', crop)
+            break
 
-            if show_label:
-                bbox_mess = '%s: %.2f' % (classes[class_ind], score)
-                t_size = cv2.getTextSize(
-                    bbox_mess, 0, fontScale, thickness=bbox_thick // 2)[0]
-                c3 = (c1[0] + t_size[0], c1[1] - t_size[1] - 3)
-                cv2.rectangle(image, c1, (np.float32(c3[0]), np.float32(
-                    c3[1])), bbox_color, -1)  # filled
+            # if show_label:
+            #     bbox_mess = '%s: %.2f' % (classes[class_ind], score)
+            #     t_size = cv2.getTextSize(
+            #         bbox_mess, 0, fontScale, thickness=bbox_thick // 2)[0]
+            #     c3 = (c1[0] + t_size[0], c1[1] - t_size[1] - 3)
+            #     cv2.rectangle(image, c1, (np.float32(c3[0]), np.float32(
+            #         c3[1])), bbox_color, -1)  # filled
 
-                cv2.putText(image, bbox_mess, (c1[0], np.float32(c1[1] - 2)), cv2.FONT_HERSHEY_SIMPLEX,
-                            fontScale, (0, 0, 0), bbox_thick // 2, lineType=cv2.LINE_AA)
+            #     cv2.putText(image, bbox_mess, (c1[0], np.float32(c1[1] - 2)), cv2.FONT_HERSHEY_SIMPLEX,
+            #                 fontScale, (0, 0, 0), bbox_thick // 2, lineType=cv2.LINE_AA)
     return image
 
 
-def person_detect(image_path: str, infer) -> tuple:
-    original_image = cv2.imread(image_path)
-    original_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB)
+def person_detect(image: list, saved_model_loaded) -> tuple:
+    original_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     image_data = cv2.resize(original_image, (416, 416))
     image_data = image_data / 255.
 
@@ -85,6 +83,8 @@ def person_detect(image_path: str, infer) -> tuple:
     for i in range(1):
         images_data.append(image_data)
     images_data = np.asarray(images_data).astype(np.float32)
+
+    infer = saved_model_loaded.signatures['serving_default']
 
     batch_data = tf.constant(images_data)
     pred_bbox = infer(batch_data)
