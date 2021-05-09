@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 
 from behavior.behavior_model import init_model_behavior
-# from detection.object_detector import init_model_person_detect, person_detect
 from detection.yolo_detector import init_model_person, person_detect
 from preparation.preparation import resize_image, normalize_image, load_data_set
 from sklearn.metrics import confusion_matrix
@@ -40,14 +39,12 @@ if __name__ == "__main__":
     )
 
     # init model...
-    # person_model = init_model_person_detect(
-    #     config=config_person, weight=weight_person)
     person_model = init_model_person("./models/yolov4-tensorflow")
-    # vgg16 = init_model_behavior(weight_path=weight_model_vgg16, types="vgg16", include_top=include_top, img_height=img_height,
-    #                             img_weight=img_weight, channels=channels, class_num=class_num, layer_num=19, activation=activation, loss=loss)
+    vgg16 = init_model_behavior(weight_path=weight_model_vgg16, types="vgg16", include_top=include_top, img_height=img_height,
+                                img_weight=img_weight, channels=channels, class_num=class_num, layer_num=19, activation=activation, loss=loss)
 
-    vgg19 = init_model_behavior(weight_path=weight_model_vgg19, types="vgg19", include_top=include_top, img_height=img_height,
-                                img_weight=img_weight, channels=channels, class_num=class_num, layer_num=22, activation=activation, loss=loss)
+    # vgg19 = init_model_behavior(weight_path=weight_model_vgg19, types="vgg19", include_top=include_top, img_height=img_height,
+    #                             img_weight=img_weight, channels=channels, class_num=class_num, layer_num=22, activation=activation, loss=loss)
 
     # resnet = init_model_behavior(weight_path=weight_model_resnet, types="resnet", include_top=include_top, img_height=img_height,
     #                               img_weight=img_weight, channels=channels, class_num=class_num, layer_num=190, activation=activation, loss=loss)
@@ -65,39 +62,31 @@ if __name__ == "__main__":
     index = 0
     for image_path in images:
         image = cv2.imread(image_path)
-        if index == 1:
-            break
 
-        # if image == []:
-        #     continue
-        # test_data.append(image)
         # face dectection
-        person_res = person_detect(image_path, person_model)
-        # person_res = person_detect(net=person_model, image=image)
+        person_res = person_detect(image, person_model)
         if not person_res.any():
             continue
 
-        # # preparation data for expression model
-        # # print(person_res)
-        # person_res = resize_image(
-        #     image=person_res, size_image=(img_height, img_weight))
-        # person_res = normalize_image(image=person_res)
-        # person_res = np.expand_dims(person_res, axis=0)
-        # # print(person_res.shape)
+        # preparation data for expression model
+        person_res = resize_image(
+            image=person_res, size_image=(img_height, img_weight))
+        person_res = normalize_image(image=person_res)
+        person_res = np.expand_dims(person_res, axis=0)
 
-        # # res_predict.append(vgg16.predict(person_res))
+        res_predict.append(vgg16.predict(person_res))
         # res_predict.append(vgg19.predict(person_res))
-        # # res_predict.append(resnet.predict(person_res))
-        # # res_predict.append(mobile_net.predict(person_res))
+        # res_predict.append(resnet.predict(person_res))
+        # res_predict.append(mobile_net.predict(person_res))
         print(image_path)
-        index += 1
 
-     # Time elapsed
+    # Time elapsed
     end = time.time()
     duration = datetime.now() - start
     print("[INFO]: time predict vgg19 : ", duration)
     seconds = end - startTime
-    fps = len(images)/seconds
+    fps = len(res_predict)/seconds
+    print(f"[INFO]: images : {len(res_predict)}")
     print("[INFO]: Estimated frames per second : {0}".format(fps))
 
     # # print("[INFO]: compare evaluate model expression...")
