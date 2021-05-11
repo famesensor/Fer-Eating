@@ -71,7 +71,13 @@ if __name__ == "__main__":
         person_res = person_detect(
             image=frame, saved_model_loaded=person_model)
         if not person_res.any():
-            print("[INFO}: continue...")
+            print("[INFO]: continue...")
+            continue
+
+        # face dectection
+        face_res = face_detect(net=face_model, image=frame)
+        if not face_res.any():
+            print("[INFO]: continue...")
             continue
 
         # preparation data for behavior model
@@ -113,24 +119,21 @@ if __name__ == "__main__":
             if(every_n_frame == 1):
                 interest_area.append([nth_frame, every_n_frame])
 
-            behavior_res.append([nth_frame, dict_behavior[b_res]])
-            print(f"[BEHAVIOR]: {dict_behavior[b_res]}")
+        behavior_res.append([nth_frame, dict_behavior[b_res]])
+        print(f"[BEHAVIOR]: {dict_behavior[b_res]}")
 
-            # face dectection
-            face_res = face_detect(net=face_model, image=frame)
+        # preparation data for expression model
+        face_res = resize_image(
+            image=face_res, size_image=(img_height, img_width))
+        face_res = normalize_image(image=face_res)
+        face_res = np.expand_dims(face_res, axis=0)
 
-            # preparation data for expression model
-            face_res = resize_image(
-                image=face_res, size_image=(img_height, img_width))
-            face_res = normalize_image(image=face_res)
-            face_res = np.expand_dims(face_res, axis=0)
-
-            # expression recognition
-            e_res = expression_model.predict(face_res)
-            e_res = np.argmax(e_res)
-            expression_res.append([nth_frame, dict_exppression[e_res]])
-            print(f"[EXPRESSION]: {dict_exppression[e_res]}")
-            print("\n==============================================")
+        # expression recognition
+        e_res = expression_model.predict(face_res)
+        e_res = np.argmax(e_res)
+        expression_res.append([nth_frame, dict_exppression[e_res]])
+        print(f"[EXPRESSION]: {dict_exppression[e_res]}")
+        print("\n==============================================")
 
     # plot result
     plot_graph(expression_data=expression_res, behavior_data=behavior_res,
