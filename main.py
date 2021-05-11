@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 import multiprocessing
 import os
 
-from detection.object_detector import person_detect, face_detect, init_model_person_detect, init_model_face_detect
+from detection.object_detector import face_detect, init_model_face_detect
+from detection.yolo_detector import init_model_person, person_detect
 from preparation.preparation import load_image, load_vdo, resize_image, normalize_image
 from behavior.behavior_model import init_model_behavior
 from expression.expression_model import init_model_expression
@@ -14,11 +15,10 @@ from plot.plot import plot_graph
 
 if __name__ == "__main__":
     # init values...
-    config_person = './models/yolo/yolov4.cfg'
-    weight_person = './models/yolo/yolov4.weights'
+    weight_person = './models/yolov4-tensorflow'
     config_face = './models/dnn/deploy.prototxt.txt'
     weight_face = './models/dnn/res10_300x300_ssd_iter_140000_fp16.caffemodel'
-    weight_behavior = "./models/behavior/vgg16_behavior_2.h5"
+    weight_behavior = "./models/behavior/mobilenet/mobilenet_behavior.h5"
     weight_expression = "./models/expression/vgg16/vgg16_expression.h5"
     include_top = True
     class_num = 8
@@ -44,19 +44,16 @@ if __name__ == "__main__":
     img_height, img_width = 224, 224
 
     # init model...
-    person_model = init_model_person_detect(
-        config=config_person, weight=weight_person)
+    person_model = init_model_person(weight_path=weight_person)
     face_model = init_model_face_detect(config=config_face, weight=weight_face)
-    behavior_model = init_model_behavior(weight_path=weight_behavior, types="vgg16", include_top=include_top, img_height=img_height,
-                                         img_weight=img_weight, channels=channels, class_num=2, layer_num=19, activation=activation, loss=loss)
+    behavior_model = init_model_behavior(weight_path=weight_behavior, types="mobilenet", include_top=include_top, img_height=img_height,
+                                         img_weight=img_weight, channels=channels, class_num=2, layer_num=154, activation=activation, loss=loss)
     expression_model = init_model_expression(weight_path=weight_expression, types="vgg16", include_top=include_top, img_height=img_height,
                                              img_weight=img_weight, channels=channels, class_num=class_num, layer_num=19, activation=activation, loss=loss)
 
     # load dataset...
     vdo_path = "./dataset/test/Deep1.MOV"
     vdocap = load_vdo(vdo_path=vdo_path)
-    index = 0
-    print("[INFO]: ID of main process: {}".format(os.getpid()))
 
     # sequence pattern
     while True:
@@ -66,37 +63,41 @@ if __name__ == "__main__":
         if not ret:
             break
 
-        print("[INFO]: skipped {} frame".format(every_n_frame))
-        if nth_frame % every_n_frame == 0:
-            print("==============================================\n")
-            print("[INFO]: frame no. {}".format(nth_frame))
-            # person detection
-            person_res = person_detect(net=person_model, image=frame)
+        # print("[INFO]: skipped {} frame".format(every_n_frame))
+        # if nth_frame % every_n_frame == 0:
+        print("==============================================\n")
+        print("[INFO]: frame no. {}".format(nth_frame))
+        # person detection
+        person_res = person_detect(
+            image=frame, saved_model_loaded=person_model)
 
-            # preparation data for behavior model
-            person_res = resize_image(
-                image=person_res, size_image=(img_height, img_width))
-            person_res = normalize_image(image=person_res)
-            person_res = np.expand_dims(person_res, axis=0)
+        # preparation data for behavior model
+        person_res = resize_image(
+            image=person_res, size_image=(img_height, img_width))
+        person_res = normalize_image(image=person_res)
+        person_res = np.expand_dims(person_res, axis=0)
 
-            # behavior detection
-            b_res = behavior_model.predict(person_res)
-            b_res = np.argmax(b_res)
+        # behavior detection
+        b_res = behavior_model.predict(person_res)
+        if not b_res.any():
+            print("[INFO}: continue...")
+            continue
+        b_res = np.argmax(b_res)
 
-            # condition for change step frame rate
-            if b_res == 0:
-                if not flag_eat:
-                    print(
-                        "[INFO]: first eating in video frame on. {}".format(nth_frame))
-                    flag_eat = True
-                    number_eat = 1
-                    every_n_frame = 1
-                    frame_start_eat = nth_frame
+        # condition for change step frame rate
+        if b_res == 0:
+            if not flag_eat:
+                print(
+                    "[INFO]: first eating in video frame on. {}".format(nth_frame))
+                flag_eat = True
+                number_eat = 1
+                every_n_frame = 1
+                frame_start_eat = nth_frame
 
-                    file_name = '../export/export_first_frame_eat_' + \
-                        str(nth_frame)+'.jpg'
-                    image_res.append([nth_frame, file_name])
-                    cv2.imwrite(file_name, frame)
+                file_name = '../export/export_first_frame_eat_' + \
+                    str(nth_frame)+'.jpg'
+                image_res.append([nth_frame, file_name])
+                cv2.imwrite(file_name, frame)
 
             if flag_eat:
                 print("[INFO]: eating...")
@@ -131,6 +132,6 @@ if __name__ == "__main__":
             print(f"[EXPRESSION]: {dict_exppression[e_res]}")
             print("\n==============================================")
 
-    # TODO: plot result
+    # plot result
     plot_graph(expression_data=expression_res, behavior_data=behavior_res,
                image_data=image_res, interest_area_data=interest_area)
