@@ -1,5 +1,3 @@
-# TODO: refactor code now to function base
-
 import keras
 import numpy as np
 import matplotlib.pyplot as plt

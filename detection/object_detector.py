@@ -21,8 +21,6 @@ import time
 # image = cv2.imread(args['image'])
 # threshold = args["threshold"]
 
-# TODO: assign type parameter in func.
-
 
 def draw(image, boxes, confidences) -> list:
     for i, box in enumerate(boxes):
