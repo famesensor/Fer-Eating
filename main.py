@@ -70,6 +70,9 @@ if __name__ == "__main__":
         # person detection
         person_res = person_detect(
             image=frame, saved_model_loaded=person_model)
+        if not person_res.any():
+            print("[INFO}: continue...")
+            continue
 
         # preparation data for behavior model
         person_res = resize_image(
@@ -79,9 +82,6 @@ if __name__ == "__main__":
 
         # behavior detection
         b_res = behavior_model.predict(person_res)
-        if not b_res.any():
-            print("[INFO}: continue...")
-            continue
         b_res = np.argmax(b_res)
 
         # condition for change step frame rate
