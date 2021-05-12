@@ -11,7 +11,7 @@ from detection.yolo_detector import init_model_person, person_detect
 from preparation.preparation import load_image, load_vdo, resize_image, normalize_image
 from behavior.behavior_model import init_model_behavior
 from expression.expression_model import init_model_expression
-from plot.plot import plot_graph
+# from plot.plot import plot_graph
 
 if __name__ == "__main__":
     # init values...
@@ -70,13 +70,27 @@ if __name__ == "__main__":
         # person detection
         person_res = person_detect(
             image=frame, saved_model_loaded=person_model)
+
+        if person_res is None:
+            print("[INFO]: Person not found")
+            print("[INFO]: continue...")
+            continue
+
         if not person_res.any():
+            print("[INFO]: Person not found")
             print("[INFO]: continue...")
             continue
 
         # face dectection
         face_res = face_detect(net=face_model, image=frame)
+
+        if face_res is None:
+            print("[INFO]: Face not found")
+            print("[INFO]: continue...")
+            continue
+
         if not face_res.any():
+            print("[INFO]: Face not found")
             print("[INFO]: continue...")
             continue
 
@@ -96,28 +110,32 @@ if __name__ == "__main__":
                 print(
                     "[INFO]: first eating in video frame on. {}".format(nth_frame))
                 flag_eat = True
-                number_eat = 1
-                every_n_frame = 1
-                frame_start_eat = nth_frame
+                # every_n_frame = 1
+                # frame_start_eat = nth_frame
 
-                file_name = '../export/export_first_frame_eat_' + \
+                file_name = './export/export_first_frame_eat_' + \
                     str(nth_frame)+'.jpg'
                 image_res.append([nth_frame, file_name])
                 cv2.imwrite(file_name, frame)
 
+            # if flag_eat:
+            #     print("[INFO]: eating...")
+            #     count_step += 1
+
+            # if count_step == 50:
+            #     print("[INFO]: change skip frame to default...")
+            #     count_step = 0
+            #     flag_eat = False
+            #     frame_end_eat = nth_frame
+            #     every_n_frame = 5
+
+            # if(every_n_frame == 1):
+            #     interest_area.append([nth_frame, every_n_frame])
+
+        if b_res == 1:
             if flag_eat:
-                print("[INFO]: eating...")
-                count_step += 1
-
-            if count_step == 50:
-                print("[INFO]: change skip frame to default...")
-                count_step = 0
                 flag_eat = False
-                frame_end_eat = nth_frame
-                every_n_frame = 5
 
-            if(every_n_frame == 1):
-                interest_area.append([nth_frame, every_n_frame])
 
         behavior_res.append([nth_frame, dict_behavior[b_res]])
         print(f"[BEHAVIOR]: {dict_behavior[b_res]}")
@@ -135,6 +153,6 @@ if __name__ == "__main__":
         print(f"[EXPRESSION]: {dict_exppression[e_res]}")
         print("\n==============================================")
 
-    # plot result
-    plot_graph(expression_data=expression_res, behavior_data=behavior_res,
-               image_data=image_res, interest_area_data=interest_area)
+    # # plot result
+    # plot_graph(expression_data=expression_res, behavior_data=behavior_res,
+    #            image_data=image_res, interest_area_data=interest_area)
