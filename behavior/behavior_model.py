@@ -117,7 +117,7 @@ def train_model(checkpoint_path: str, save_weights_path: str, model: Model,  tra
                                   steps_per_epoch=step_size_train,
                                   epochs=epochs_train, verbose=5,
                                   validation_data=validation_data,
-                                  validation_steps=step_size_valid, callbacks=callbacks)
+                                  validation_steps=step_size_valid, callbacks=callbacks, shuffle=True)
 
     duration = datetime.now() - start
     print("Training completed in time: ", duration)
