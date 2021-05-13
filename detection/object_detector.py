@@ -48,7 +48,10 @@ def init_model_person_detect(config: str, weight: str) -> cv2.dnn:
 
 def init_model_face_detect(config: str, weight: str) -> cv2.dnn_Net:
     print("[INFO]: init model face dectection...")
-    return cv2.dnn.readNetFromCaffe(config, weight)
+    net = cv2.dnn.readNetFromCaffe(config, weight)
+    net.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
+    net.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
+    return net
 
 
 def crop(image: list, boxes: list) -> list:
