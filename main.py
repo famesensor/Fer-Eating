@@ -1,4 +1,5 @@
 import cv2
+import math
 import numpy as np
 import multiprocessing as mp
 from keras.applications.vgg16 import VGG16
@@ -12,6 +13,15 @@ from preparation.preparation import load_image, load_vdo, resize_image, normaliz
 from behavior.behavior_model import init_model_behavior
 from expression.expression_model import init_model_expression
 # from plot.plot import plot_graph
+
+
+def export_image(image: list, number_frame: int) -> None:
+    file_name = './export/export_first_frame_eat_' + \
+        str(nth_frame)+'.jpg'
+    image_res.append([nth_frame, file_name])
+    cv2.imwrite(file_name, frame)
+    return
+
 
 if __name__ == "__main__":
     # init values...
@@ -39,8 +49,10 @@ if __name__ == "__main__":
     expression_res = []
     image_res = []
     interest_area = []
-    frame_start_eat = 0
-    frame_end_eat = 0
+    temp = []
+    # frame_start_eat = 0
+    # frame_end_eat = 0
+    count_step = 0
     img_height, img_width = 224, 224
 
     # init model...
@@ -54,8 +66,10 @@ if __name__ == "__main__":
     # load dataset...
     vdo_path = "./dataset/test/Deep1.MOV"
     vdocap = load_vdo(vdo_path=vdo_path)
+    fps = math.ceil(vdocap.get(cv2.CAP_PROP_FPS)) * 2
+    if fps == 0:
+        exit()
 
-    # sequence pattern
     while True:
         nth_frame = vdocap.get(cv2.CAP_PROP_POS_FRAMES)
         ret, frame = vdocap.read()
@@ -104,19 +118,42 @@ if __name__ == "__main__":
         b_res = behavior_model.predict(person_res)
         b_res = np.argmax(b_res)
 
-        # condition for change step frame rate
+        # condition for keep interest interval...
         if b_res == 0:
-            if not flag_eat:
+            if not flag_eat:  # first eating...
                 print(
-                    "[INFO]: first eating in video frame on. {}".format(nth_frame))
+                    "\n[INFO]: first eating in video frame on. {}".format(nth_frame))
                 flag_eat = True
+                export_image(frame, nth_frame)  # extract image is interest...
+                # keep interest...
+                temp.append(nth_frame)
+
                 # every_n_frame = 1
                 # frame_start_eat = nth_frame
 
-                file_name = './export/export_first_frame_eat_' + \
-                    str(nth_frame)+'.jpg'
-                image_res.append([nth_frame, file_name])
-                cv2.imwrite(file_name, frame)
+                # file_name = './export/export_first_frame_eat_' + \
+                #     str(nth_frame)+'.jpg'
+                # image_res.append([nth_frame, file_name])
+                # cv2.imwrite(file_name, frame)
+            else:
+                # keep interest...
+                temp.append(nth_frame)
+                count_step += 1  # count step after eating...
+
+            if count_step >= fps:
+                # keep interest interval...
+                interest_area.append(temp)
+                print(f"Start eating phase {len(interest_area)}")
+                temp = []
+                # keep interest...
+                temp.append(nth_frame)
+                export_image(frame, nth_frame)
+                count_step = 0  # set count for new interest interval...
+        else:
+            if flag_eat:
+                # keep interest...
+                temp.append(nth_frame)
+                count_step += 1  # count step after eating...
 
             # if flag_eat:
             #     print("[INFO]: eating...")
@@ -132,10 +169,9 @@ if __name__ == "__main__":
             # if(every_n_frame == 1):
             #     interest_area.append([nth_frame, every_n_frame])
 
-        if b_res == 1:
-            if flag_eat:
-                flag_eat = False
-
+            # if b_res == 1:
+            #     if flag_eat:
+            #         flag_eat = False
 
         behavior_res.append([nth_frame, dict_behavior[b_res]])
         print(f"[BEHAVIOR]: {dict_behavior[b_res]}")
