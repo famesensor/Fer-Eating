@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 from datetime import datetime
 from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
-from keras.layers import Dense, Flatten, Input
+from keras.layers import Dense, Flatten, Input, Dropout
 from keras import optimizers
 from keras.models import Model
 from keras.applications.vgg16 import VGG16
@@ -37,7 +37,7 @@ def init_model_mobilenet(include_top: bool, input_tensor, input_shape: tuple, mi
     return model
 
 
-def init_model_train_behavior(types: str, include_top: bool, img_height: int, img_weight: int, channels: int, class_num: int, layer_num: int, activation: str, loss: str) -> Model:
+def init_model_train_behavior(types: str, include_top: bool, img_height: int, img_weight: int, channels: int, class_num: int, layer_num: int, activation: str, loss: str, dropout=0.2) -> Model:
     model = {
         "vgg16": VGG16(include_top=include_top, input_tensor=None, weights='imagenet',
                        input_shape=(img_height, img_weight, channels)),
@@ -50,7 +50,7 @@ def init_model_train_behavior(types: str, include_top: bool, img_height: int, im
     }[types]
 
     model = setup_network(model=model, include_top=include_top,
-                          class_num=class_num, layer_num=layer_num, activation=activation, loss=loss)
+                          class_num=class_num, layer_num=layer_num, activation=activation, loss=loss, types=types, dropout=dropout)
     print("[INFO]: init model behavior {}...".format(types))
 
     return model
@@ -71,11 +71,20 @@ def init_model_train_behavior(types: str, include_top: bool, img_height: int, im
 #     return new_model
 
 
-def setup_network(model: Model, include_top: bool, class_num: int, layer_num: int, activation: str, loss: str) -> Model:
+def setup_network(model: Model, include_top: bool, class_num: int, layer_num: int, activation: str, loss: str, types: str,  dropout: float) -> Model:
     if include_top:
         for layer in model.layers[:layer_num]:
             layer.trainable = False
         x = model.layers[-2].output
+        prediction = Dense(class_num, activation=activation)(x)
+    if not include_top and types in ["vgg16", "vgg19"]:
+        for layer in model.layers:
+            layer.trainable = False
+        x = Flatten()(model.output)
+        x = Dense(units=4096, activation='relu')(x)
+        x = Dropout(dropout)(x)
+        x = Dense(units=4096, activation='relu')(x)
+        x = Dropout(dropout)(x)
         prediction = Dense(class_num, activation=activation)(x)
 
     new_model = Model(inputs=model.input, outputs=prediction)
