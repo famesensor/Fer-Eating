@@ -18,7 +18,7 @@ if __name__ == "__main__":
     save_weight_mobilenet_path = "./models/behavior/mobilenet/mobilenet_behavior.h5"
     batch_size = 32
     Epochs = 18
-    include_top = True
+    include_top = False
     class_num = 2
     activation = "softmax"
     loss = "categorical_crossentropy"
@@ -45,29 +45,22 @@ if __name__ == "__main__":
     STEP_SIZE_VALID = validation_data.n//validation_data.batch_size
     print("load data end...")
 
-    # vgg16 = init_model_train_behavior(types="vgg16", include_top=include_top, img_height=img_height,
-    #                                   img_weight=img_weight, channels=channels, class_num=class_num, layer_num=19, activation=activation, loss=loss)
-    print("vgg16 model start...")
-    vgg16_model = init_model_vgg16(include_top=include_top, input_tensor=None, input_shape=(
-        img_height, img_weight, channels))
-    # setup network
-    vgg16_model = setup_network(
-        model=vgg16_model, include_top=include_top, class_num=class_num, layer_num=19, activation=activation, loss=loss)
-    vgg16_res, history_vgg16 = train_model(checkpoint_path=check_point_path+"vgg16_best.h5", save_weights_path=save_weight_vgg16_path, model=vgg16_model, train_data=train_data,
+    vgg16 = init_model_train_behavior(types="vgg16", include_top=include_top, img_height=img_height,
+                                      img_weight=img_weight, channels=channels, class_num=class_num, layer_num=19, activation=activation, loss=loss)
+    vgg16_res, history_vgg16 = train_model(checkpoint_path=check_point_path+"vgg16_best.h5", save_weights_path=save_weight_vgg16_path, model=vgg16, train_data=train_data,
                                            validation_data=validation_data, step_size_train=STEP_SIZE_TRAIN, step_size_valid=STEP_SIZE_VALID, epochs_train=Epochs)
-    # plot result trian model
     plot_result_train_model(history=history_vgg16,
                             model_name="vgg16 accurency")
-    print("vgg16 model end...")
 
-    # # vgg19 = init_model_train_behavior(types="vgg19", include_top=include_top, img_height=img_height,
-    # #                                   img_weight=img_weight, channels=channels, class_num=class_num, layer_num=22, activation=activation, loss=loss)
+    # vgg19 = init_model_train_behavior(types="vgg19", include_top=include_top, img_height=img_height,
+    #                                   img_weight=img_weight, channels=channels, class_num=class_num, layer_num=22, activation=activation, loss=loss)
     # vgg19_res, history_vgg19 = train_model(checkpoint_path=check_point_path+"vgg19_best.h5", save_weights_path=save_weight_vgg19_path, model=vgg19, train_data=train_data,
     #                                        validation_data=validation_data, step_size_train=STEP_SIZE_TRAIN, step_size_valid=STEP_SIZE_VALID, epochs_train=Epochs)
     # plot_result_train_model(history_vgg19, "vgg19")
 
-    # # resnet = init_model_train_behavior(types="resnet", include_top=include_top, img_height=img_height,
-    # #                                    img_weight=img_weight, channels=channels, class_num=class_num, layer_num=190, activation=activation, loss=loss)
+    # resnet = init_model_train_behavior(types="resnet", include_top=include_top, img_height=img_height,
+    #                                    img_weight=img_weight, channels=channels, class_num=class_num, layer_num=190, activation=activation, loss=loss)
+    # resnet.summary()
     # resnet_res, history_resnet = train_model(checkpoint_path=check_point_path+"resnet_best.h5", save_weights_path=save_weight_resnet_path, model=resnet, train_data=train_data,
     #                                          validation_data=validation_data, step_size_train=STEP_SIZE_TRAIN, step_size_valid=STEP_SIZE_VALID, epochs_train=Epochs)
     # plot_result_train_model(history_resnet, "resnet")
