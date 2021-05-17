@@ -48,7 +48,7 @@ if __name__ == "__main__":
     vgg16_model = setup_network(
         model=vgg16_model, include_top=include_top, class_num=class_num, layer_num=19, activation=activation, loss=loss, types="vgg16", dropout=dropout)
     # train model
-    train_vgg16, history_vgg16 = train_model(checkpoint_path=check_point_path, save_weight_path=save_weight_vgg16,
+    train_vgg16, history_vgg16 = train_model(checkpoint_path=check_point_path+"vgg16_best.h5", save_weight_path=save_weight_vgg16,
                                              model=vgg16_model, train_data=train_data, validation_data=validation_data, step_size_train=STEP_SIZE_TRAIN, step_size_valid=STEP_SIZE_VALID, epochs_train=Epochs)
     # plot result trian model
     plot_result_train_model(history=history_vgg16,
@@ -64,7 +64,7 @@ if __name__ == "__main__":
     vgg19_model = setup_network(
         model=vgg19_model, include_top=include_top, class_num=class_num, layer_num=22, activation=activation, loss=loss, types="vgg19", dropout=dropout)
     # train model
-    train_vgg19, history_vgg19 = train_model(checkpoint_path=check_point_path, save_weight_path=save_weight_vgg19,
+    train_vgg19, history_vgg19 = train_model(checkpoint_path=check_point_path+"vgg19_best.h5", save_weight_path=save_weight_vgg19,
                                              model=vgg19_model, train_data=train_data, validation_data=validation_data, step_size_train=STEP_SIZE_TRAIN, step_size_valid=STEP_SIZE_VALID, epochs_train=Epochs)
     # plot result trian model
     plot_result_train_model(history=history_vgg19,
