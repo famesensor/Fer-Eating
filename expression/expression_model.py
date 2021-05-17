@@ -90,11 +90,20 @@ def init_model_alexnet():
     return model
 
 
-def setup_network(model: Model, include_top: bool, class_num: int, layer_num: int, activation: str, loss: str) -> Model:
+def setup_network(model: Model, include_top: bool, class_num: int, layer_num: int, activation: str, loss: str, types: str,  dropout: float) -> Model:
     if include_top:
         for layer in model.layers[:layer_num]:
             layer.trainable = False
         x = model.layers[-2].output
+        prediction = Dense(class_num, activation=activation)(x)
+    if not include_top and types in ["vgg16", "vgg19"]:
+        for layer in model.layers:
+            layer.trainable = False
+        x = Flatten()(model.output)
+        x = Dense(units=4096, activation='relu')(x)
+        x = Dropout(dropout)(x)
+        x = Dense(units=4096, activation='relu')(x)
+        x = Dropout(dropout)(x)
         prediction = Dense(class_num, activation=activation)(x)
 
     new_model = Model(inputs=model.input, outputs=prediction)
@@ -115,11 +124,11 @@ def train_model(checkpoint_path: str, save_weight_path: str, model: Model, train
 
     start = datetime.now()
     print("Training model in time: ", start)
-    history = model.fit_generator(train_data,
-                                  steps_per_epoch=step_size_train,
-                                  epochs=epochs_train, verbose=5,
-                                  validation_data=validation_data,
-                                  validation_steps=step_size_valid, callbacks=callbacks)
+    history = model.fit(train_data,
+                        steps_per_epoch=step_size_train,
+                        epochs=epochs_train, verbose=5,
+                        validation_data=validation_data,
+                        validation_steps=step_size_valid, callbacks=callbacks)
 
     duration = datetime.now() - start
     print("Training completed in time: ", duration)
