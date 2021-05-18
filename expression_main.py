@@ -1,9 +1,9 @@
-from expression.expression_model import init_model_vgg16, init_model_vgg19, init_model_resnet50v2, init_model_alexnet, init_model_mobilenet, setup_network, train_model, plot_result_train_model
+from expression.expression_model import init_model_resnet50v2, init_model_alexnet, init_model_mobilenet, setup_network, init_model_train_expression, train_model, plot_result_train_model
 from preparation.preparation import load_data_set
 
 if __name__ == "__main__":
     # init value
-    img_height, img_weight = 224, 224
+    img_height, img_width = 224, 224
     channels = 3
     train_data_path = "./dataset/expression/train/"
     validation_data_path = "./dataset/expression/validate/"
@@ -17,7 +17,7 @@ if __name__ == "__main__":
     Epochs = 18
     include_top = False
     class_num = 8
-    dropout = 0.2
+    dropout = 0.5
     activation = "softmax"
     loss = "categorical_crossentropy"
     train_datagen_args = dict(
@@ -31,9 +31,9 @@ if __name__ == "__main__":
     # load data set train,test and validate
     print("load data...")
     train_data = load_data_set(
-        train_datagen_args, train_data_path, (img_height, img_weight), batch_size)
+        train_datagen_args, train_data_path, (img_height, img_width), batch_size)
     validation_data = load_data_set(
-        train_datagen_args, validation_data_path, (img_height, img_weight), batch_size)
+        train_datagen_args, validation_data_path, (img_height, img_width), batch_size)
 
     STEP_SIZE_TRAIN = train_data.n//train_data.batch_size
     STEP_SIZE_VALID = validation_data.n//validation_data.batch_size
@@ -42,34 +42,28 @@ if __name__ == "__main__":
     # vgg16
     print("vgg16 model start...")
     # init model
-    vgg16_model = init_model_vgg16(include_top=include_top, input_tensor=None, input_shape=(
-        img_height, img_weight, channels))
-    # setup network
-    vgg16_model = setup_network(
-        model=vgg16_model, include_top=include_top, class_num=class_num, layer_num=19, activation=activation, loss=loss, types="vgg16", dropout=dropout)
-    # train model
-    train_vgg16, history_vgg16 = train_model(checkpoint_path=check_point_path+"vgg16_best.h5", save_weight_path=save_weight_vgg16,
-                                             model=vgg16_model, train_data=train_data, validation_data=validation_data, step_size_train=STEP_SIZE_TRAIN, step_size_valid=STEP_SIZE_VALID, epochs_train=Epochs)
-    # plot result trian model
-    plot_result_train_model(history=history_vgg16,
-                            model_name="vgg16 accurency")
-    print("vgg16 model end...")
+    vgg16_model = init_model_train_expression(types="vgg16", include_top=include_top, img_height=img_height, img_width=img_width,
+                                              channels=channels, class_num=class_num, layer_num=19, activation=activation, loss=loss, dropout=dropout)
+    # # train model
+    # train_vgg16, history_vgg16 = train_model(checkpoint_path=check_point_path+"vgg16_best.h5", save_weight_path=save_weight_vgg16,
+    #                                          model=vgg16_model, train_data=train_data, validation_data=validation_data, step_size_train=STEP_SIZE_TRAIN, step_size_valid=STEP_SIZE_VALID, epochs_train=Epochs)
+    # # plot result trian model
+    # plot_result_train_model(history=history_vgg16,
+    #                         model_name="vgg16 accurency")
+    # print("vgg16 model end...")
 
     # vgg19
     print("vgg19 model start...")
     # init vgg19
-    vgg19_model = init_model_vgg19(include_top=include_top, input_tensor=None, input_shape=(
-        img_height, img_weight, channels))
-    # setup network
-    vgg19_model = setup_network(
-        model=vgg19_model, include_top=include_top, class_num=class_num, layer_num=22, activation=activation, loss=loss, types="vgg19", dropout=dropout)
-    # train model
-    train_vgg19, history_vgg19 = train_model(checkpoint_path=check_point_path+"vgg19_best.h5", save_weight_path=save_weight_vgg19,
-                                             model=vgg19_model, train_data=train_data, validation_data=validation_data, step_size_train=STEP_SIZE_TRAIN, step_size_valid=STEP_SIZE_VALID, epochs_train=Epochs)
-    # plot result trian model
-    plot_result_train_model(history=history_vgg19,
-                            model_name="vgg19 accurency")
-    print("vgg19 model end...")
+    vgg19_model = init_model_train_expression(types="vgg19", include_top=include_top, img_height=img_height, img_width=img_width,
+                                              channels=channels, class_num=class_num, layer_num=22, activation=activation, loss=loss, dropout=dropout)
+    # # train model
+    # train_vgg19, history_vgg19 = train_model(checkpoint_path=check_point_path+"vgg19_best.h5", save_weight_path=save_weight_vgg19,
+    #                                          model=vgg19_model, train_data=train_data, validation_data=validation_data, step_size_train=STEP_SIZE_TRAIN, step_size_valid=STEP_SIZE_VALID, epochs_train=Epochs)
+    # # plot result trian model
+    # plot_result_train_model(history=history_vgg19,
+    #                         model_name="vgg19 accurency")
+    # print("vgg19 model end...")
 
     # # resnet
     # print("resnet model start...")
