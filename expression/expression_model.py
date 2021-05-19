@@ -114,21 +114,22 @@ def setup_network(model: Model, include_top: bool, class_num: int, layer_num: in
             layer.trainable = False
         x = model.layers[-2].output
         prediction = Dense(class_num, activation=activation)(x)
-    if not include_top and types in ["vgg16", "vgg19"]:
+    else:
         for layer in model.layers:
             layer.trainable = False
-        print(dropout)
-        x = Flatten(name='flatten')(model.output)
-        x = Dense(units=4096, activation='relu', name='fc1')(x)
-        x = Dropout(dropout, name='dropout_1')(x)
-        x = Dense(units=4096, activation='relu', name='fc2')(x)
-        x = Dropout(dropout, name='dropout_2')(x)
-        prediction = Dense(class_num, activation=activation)(x)
+        if types in ["vgg16", "vgg19", "resnet"]:
+            x = Flatten(name='flatten')(model.output)
+            x = Dense(units=512, activation='relu', name='fc1')(x)
+            x = Dense(units=256, activation='relu', name='fc2')(x)
+            x = Dropout(dropout, name='dropout_1')(x)
+            x = Dense(units=128, activation='relu', name='fc3')(x)
+            x = Dropout(dropout, name='dropout_2')(x)
+            prediction = Dense(class_num, activation=activation)(x)
 
     new_model = Model(inputs=model.input, outputs=prediction)
     new_model.compile(loss=loss,
                       optimizer=optimizers.Adam(),
-                      metrics=['accuracy'])
+                      metrics=['accuracy'])  # learning_rate=1e-5
     return new_model
 
 

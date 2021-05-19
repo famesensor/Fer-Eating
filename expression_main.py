@@ -17,7 +17,7 @@ if __name__ == "__main__":
     Epochs = 18
     include_top = False
     class_num = 8
-    dropout = 0.5
+    dropout = 0.2
     activation = "softmax"
     loss = "categorical_crossentropy"
     train_datagen_args = dict(
@@ -65,14 +65,11 @@ if __name__ == "__main__":
     #                         model_name="vgg19 accurency")
     # print("vgg19 model end...")
 
-    # # resnet
-    # print("resnet model start...")
-    # # init resnet
-    # resnet_model = init_model_resnet50v2(
-    #     include_top=include_top, input_tensor=None, input_shape=(img_height, img_weight, channels))
-    # # setup network
-    # resnet_model = setup_network(
-    #     model=resnet_model, include_top=include_top, class_num=class_num, layer_num=190, activation=activation, loss=loss)
+    # resnet
+    print("resnet model start...")
+    # init resnet
+    resnet_model = init_model_train_expression(types="resnet", include_top=include_top, img_height=img_height, img_width=img_width,
+                                               channels=channels, class_num=class_num, layer_num=190, activation=activation, loss=loss, dropout=dropout)
     # # train model
     # train_resnet, history_resnet = train_model(checkpoint_path=check_point_path, save_weight_path=save_weight_resnet,
     #                                            model=resnet_model, train_data=train_data, validation_data=validation_data, step_size_train=STEP_SIZE_TRAIN, step_size_valid=STEP_SIZE_VALID, epochs_train=Epochs)
