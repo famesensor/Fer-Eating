@@ -89,14 +89,11 @@ if __name__ == "__main__":
     #                         model_name="alexnet accurency")
     # print("alexnet model end...")
 
-    # # mobilenet v2
-    # print("mobilenetV2 model start...")
-    # # init mobilenet
-    # mobile_model = init_model_mobilenet(
-    #     include_top=include_top, input_tensor=None, input_shape=(img_height, img_weight, channels))
-    # # setup network
-    # mobile_model = setup_network(
-    #     model=mobile_model, include_top=include_top, class_num=class_num, layer_num=154, activation=activation, loss=loss)
+    # mobilenet v2
+    print("mobilenetV2 model start...")
+    # init mobilenet
+    mobile_model = init_model_train_expression(types="mobilenet", include_top=include_top, img_height=img_height, img_width=img_width,
+                                               channels=channels, class_num=class_num, layer_num=154, activation=activation, loss=loss, dropout=dropout)
     # # train model
     # train_resnet, history_resnet = train_model(checkpoint_path=check_point_path, save_weight_path=save_weight_mobilenet,
     #                                            model=mobile_model, train_data=train_data, validation_data=validation_data, step_size_train=STEP_SIZE_TRAIN, step_size_valid=STEP_SIZE_VALID, epochs_train=Epochs)

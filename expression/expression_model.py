@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 from datetime import datetime
 from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
-from keras.layers import Dense, Flatten, Input
+from keras.layers import Dense, Flatten, Input, GlobalAveragePooling2D
 from keras import optimizers
 from keras.models import Sequential
 from keras.applications.vgg16 import VGG16
@@ -119,6 +119,14 @@ def setup_network(model: Model, include_top: bool, class_num: int, layer_num: in
             layer.trainable = False
         if types in ["vgg16", "vgg19", "resnet"]:
             x = Flatten(name='flatten')(model.output)
+            x = Dense(units=512, activation='relu', name='fc1')(x)
+            x = Dense(units=256, activation='relu', name='fc2')(x)
+            x = Dropout(dropout, name='dropout_1')(x)
+            x = Dense(units=128, activation='relu', name='fc3')(x)
+            x = Dropout(dropout, name='dropout_2')(x)
+            prediction = Dense(class_num, activation=activation)(x)
+        if types == "mobilenet":
+            x = GlobalAveragePooling2D()(model.output)
             x = Dense(units=512, activation='relu', name='fc1')(x)
             x = Dense(units=256, activation='relu', name='fc2')(x)
             x = Dropout(dropout, name='dropout_1')(x)
