@@ -174,7 +174,7 @@ def init_model_behavior(weight_path: str, types: str, include_top: bool, img_hei
     }[types]
 
     model = setup_network(model=model, include_top=include_top,
-                          class_num=class_num, layer_num=layer_num, activation=activation, loss=loss)
+                          class_num=class_num, layer_num=layer_num, activation=activation, loss=loss, types=types, dropout=0.2)
     model.load_weights(weight_path)
     print("[INFO]: init model behavior {}...".format(types))
     return model

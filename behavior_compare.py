@@ -28,7 +28,7 @@ if __name__ == "__main__":
     weight_model_mobilenet = "./models/behavior/mobilenet/mobilenet_behavior.h5"
     config_person = './models/yolo/yolov4.cfg'
     weight_person = './models/yolo/yolov4.weights'
-    include_top = True
+    include_top = False
     class_num = 2
     activation = "softmax"
     loss = "categorical_crossentropy"
