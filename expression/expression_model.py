@@ -142,10 +142,10 @@ def setup_network(model: Model, include_top: bool, class_num: int, layer_num: in
 
 
 def train_model(checkpoint_path: str, save_weight_path: str, model: Model, train_data, validation_data, step_size_train, step_size_valid, epochs_train: int) -> (Model, None):
-    checkpoint = ModelCheckpoint(checkpoint_path, monitor='val_acc', verbose=1,
+    checkpoint = ModelCheckpoint(checkpoint_path, monitor='val_accuracy', verbose=1,
                                  save_best_only=True, save_weights_only=False, mode='auto', period=1)
 
-    early = EarlyStopping(monitor='val_acc', min_delta=0,
+    early = EarlyStopping(monitor='val_accuracy', min_delta=0,
                           patience=40, verbose=1, mode='auto')
 
     callbacks = [checkpoint, early]
@@ -154,7 +154,7 @@ def train_model(checkpoint_path: str, save_weight_path: str, model: Model, train
     print("Training model in time: ", start)
     history = model.fit(train_data,
                         steps_per_epoch=step_size_train,
-                        epochs=epochs_train, verbose=5,
+                        epochs=epochs_train, verbose=2,
                         validation_data=validation_data,
                         validation_steps=step_size_valid, callbacks=callbacks)
 
@@ -172,14 +172,20 @@ def evaluate_model(model: Model, test_data_set):
 
 
 def plot_result_train_model(history, model_name: str):
-    plt.plot(history.history["acc"])
-    plt.plot(history.history['val_acc'])
-    plt.plot(history.history['loss'])
-    plt.plot(history.history['val_loss'])
+    plt.plot(history.history["accuracy"])
+    plt.plot(history.history['val_accuracy'])
     plt.title(model_name)
     plt.ylabel("Accuracy")
     plt.xlabel("Epoch")
-    plt.legend(["Accuracy", "Validation Accuracy", "loss", "Validation Loss"])
+    plt.legend(["Accuracy", "Validation Accuracy"])
+    plt.show()
+
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.title(model_name)
+    plt.ylabel("Loss")
+    plt.xlabel("Epoch")
+    plt.legend(["loss", "Validation Loss"])
     plt.show()
     return
 
@@ -197,7 +203,7 @@ def init_model_expression(weight_path: str, types: str, include_top: bool, img_h
     }[types]
 
     model = setup_network(model=model, include_top=include_top,
-                          class_num=class_num, layer_num=layer_num, activation=activation, loss=loss)
+                          class_num=class_num, layer_num=layer_num, activation=activation, loss=loss, types=types, dropout=0.2)
     model.load_weights(weight_path)
     print("[INFO]: init model expression {}...".format(types))
 
