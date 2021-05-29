@@ -17,6 +17,7 @@ if __name__ == "__main__":
     Epochs = 1
     preTrainType = "mobilenet"  # vgg19, resnet, mobilenet
     layer_num = 19  # {vgg16: 19, vgg19: 22, resnet: 190, mobilenet: 154}
+    dropout = 0.2
     class_num = 8
     batch_size = 32
     img_h, img_w = 224, 224
@@ -89,7 +90,7 @@ if __name__ == "__main__":
 
         # init model
         model = init_model_train_expression(types=preTrainType, include_top=include_top, img_height=img_h,
-                                            img_width=img_w, channels=channels, class_num=class_num, layer_num=layer_num, activation=activation, loss=loss)
+                                            img_width=img_w, channels=channels, class_num=class_num, layer_num=layer_num, activation=activation, loss=loss, dropout=dropout)
 
         # train model
         model, history = train_model(checkpoint_path=save_weight_dir+"_"+str(iteration)+"_best.h5", save_weight_path=save_weight_dir+"_"+str(iteration)+"_last.h5",
