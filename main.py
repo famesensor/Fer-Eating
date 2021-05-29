@@ -23,6 +23,12 @@ def export_image(image: list, frame_number: int) -> None:
     return
 
 
+def save_output(data: list, file_name: str) -> None:
+    with open(f"./temp/{file_name}.txt", "w") as output:
+        output.write(str(data))
+    return
+
+
 if __name__ == "__main__":
     # init values...
     weight_person = './models/yolov4-tensorflow'
@@ -48,7 +54,6 @@ if __name__ == "__main__":
     count_group = 0
     count_step = 0
     is_eating = False
-
 
     # init model...
     person_model = init_model_person(weight_path=weight_person)
@@ -146,7 +151,6 @@ if __name__ == "__main__":
             count_group += 1
             count_step = 0
 
-
         behavior_list.append([nth_frame, dict_behavior[behavior_res]])
         print(f"[BEHAVIOR]: {dict_behavior[behavior_res]}")
 
@@ -163,6 +167,10 @@ if __name__ == "__main__":
         print(f"[EXPRESSION]: {dict_exppression[expression_res]}")
         print("\n==============================================")
 
+    # save_output(expression_list, 'expression')
+    # save_output(behavior_list, 'behavior')
+    # save_output(image_list, 'image')
+    # save_output(interest_area, 'interest_area')
+
     # # plot result
-    # plot_graph(expression_data=expression_res, behavior_data=behavior_res,
-    #            image_data=image_res, interest_area_data=interest_area)
+    # plot_graph(graph_type='level')
