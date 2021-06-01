@@ -1,4 +1,6 @@
 import pandas as pd
+import numpy as np
+
 
 def prepare_dataframe(expression_data, behavior_data, image_data, interest_area_data):
 
@@ -38,10 +40,6 @@ def prepare_dataframe(expression_data, behavior_data, image_data, interest_area_
     # just wrap a column for one line plot
     df['wrap'] = 'expression'
 
-    # add interest area label
-    df.loc[df['area'] == 1, 'area'] = 'interest'
-    df.loc[df['area'].isnull(), 'area'] = 'ignore'
-
     return df
 
 
@@ -53,6 +51,29 @@ def group_expression_level(dataframe):
     return df_level
 
 
+def group_expression(dataframe):
+
+    expressions = ['disgust', 'fear', 'anger', 'sadness',
+                   'contempt', 'neutral', 'surprise', 'happy']
+
+    # group by continuous expression
+    df_expression = dataframe.copy()
+    df_expression['group'] = df_expression['expression'].ne(
+        dataframe['expression'].shift()).cumsum()
+
+    # wrap expressions for legend in graph
+    index = -1
+
+    for expression in expressions:
+        df_expression.loc[index] = [np.nan, expression,
+                                    np.nan, np.nan, np.nan, np.nan, 'expression', np.nan]
+        index = index - 1
+
+    df_expression.sort_index(inplace=True)
+
+    return df_expression
+
+
 def group_interest_area(dataframe):
     # group by continuous interest area
     df_interest_area = dataframe.copy()
@@ -60,4 +81,5 @@ def group_interest_area(dataframe):
         dataframe['area'].shift()).cumsum()
     df_interest_area_group = df_interest_area.groupby(
         'group')  # extract each group
+
     return df_interest_area_group
