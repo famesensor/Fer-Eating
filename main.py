@@ -6,13 +6,14 @@ from keras.applications.vgg16 import VGG16
 import matplotlib.pyplot as plt
 import multiprocessing
 import os
+from datetime import datetime
 
 from detection.object_detector import face_detect, init_model_face_detect
 from detection.yolo_detector import init_model_person, person_detect
 from preparation.preparation import load_image, load_vdo, resize_image, normalize_image
 from behavior.behavior_model import init_model_behavior
 from expression.expression_model import init_model_expression
-# from plot.plot import plot_graph
+from plot.plot import plot_graph
 
 
 def export_image(image: list, frame_number: int) -> None:
@@ -24,7 +25,7 @@ def export_image(image: list, frame_number: int) -> None:
 
 
 def save_output(data: list, file_name: str) -> None:
-    with open(f"./temp/{file_name}.txt", "w") as output:
+    with open(f"./export/temp/{file_name}.txt", "w") as output:
         output.write(str(data))
     return
 
@@ -35,8 +36,8 @@ if __name__ == "__main__":
     config_face = './models/dnn/deploy.prototxt.txt'
     weight_face = './models/dnn/res10_300x300_ssd_iter_140000_fp16.caffemodel'
     weight_behavior = "./models/behavior/vgg16/vgg16_behavior.h5"
-    weight_expression = "./models/expression/vgg16/vgg16_expression.h5"
-    include_top = True
+    weight_expression = "./models/expression/vgg16/vgg16_5_best.h5"
+    include_top = False
     class_num_behavior = 2
     class_num_expression = 8
     img_height, img_width = 224, 224
@@ -55,6 +56,8 @@ if __name__ == "__main__":
     count_step = 0
     is_eating = False
 
+    start = datetime.now()
+
     # init model...
     person_model = init_model_person(weight_path=weight_person)
     face_model = init_model_face_detect(config=config_face, weight=weight_face)
@@ -64,13 +67,13 @@ if __name__ == "__main__":
                                              img_weight=img_width, channels=channels, class_num=class_num_expression, layer_num=19, activation=activation, loss=loss)
 
     # load dataset...
-    vdo_path = "./dataset/test/MVI_0889.MOV"
+    vdo_path = "./dataset/test/testv4.mp4"
     vdocap = load_vdo(vdo_path=vdo_path)
     fps = math.ceil(vdocap.get(cv2.CAP_PROP_FPS))
     if fps == 0:
         exit()
 
-    interest_fps = fps * 2
+    interest_fps = fps * 6
 
     while True:
         nth_frame = vdocap.get(cv2.CAP_PROP_POS_FRAMES)
@@ -97,7 +100,13 @@ if __name__ == "__main__":
             continue
 
         # face dectection
-        face_res = face_detect(net=face_model, image=frame)
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        gray_img = np.zeros_like(frame)
+        gray_img[:,:,0] = gray
+        gray_img[:,:,1] = gray
+        gray_img[:,:,2] = gray
+
+        face_res = face_detect(net=face_model, image=gray_img)
 
         if face_res is None:
             print("[INFO]: Face not found")
@@ -167,10 +176,16 @@ if __name__ == "__main__":
         print(f"[EXPRESSION]: {dict_exppression[expression_res]}")
         print("\n==============================================")
 
-    # save_output(expression_list, 'expression')
-    # save_output(behavior_list, 'behavior')
-    # save_output(image_list, 'image')
-    # save_output(interest_area, 'interest_area')
+        # file = f'./export/export_frame_eat_{str(nth_frame)}_{dict_exppression[expression_res]}.jpg'
+        # cv2.imwrite(file, gray_img)
 
-    # # plot result
-    # plot_graph(graph_type='level')
+    save_output(expression_list, 'expression')
+    save_output(behavior_list, 'behavior')
+    save_output(image_list, 'image')
+    save_output(interest_area, 'interest_area')
+
+    duration = datetime.now() - start
+    print("Completed in time: ", duration)
+
+    # plot result
+    plot_graph(graph_type='level')
