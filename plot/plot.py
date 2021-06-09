@@ -225,7 +225,8 @@ def calculate_expression_pattern(_dataframe):
         dataframe["pattern"] = np.nan
 
         if dataframe['area'].iloc[0] >= 0:
-            center = math.ceil((dataframe.index[-1] + dataframe.index[0])/2)
+            # center = math.ceil((dataframe.index[-1] + dataframe.index[0])/2)
+            center = math.ceil(((dataframe.index[-1] - dataframe.index[0])*(0.6))+dataframe.index[0])
 
             dataframe.loc[(dataframe.index < center), "timeline"] = "first"
             dataframe.loc[(dataframe.index >= center), "timeline"] = "last"
@@ -237,8 +238,11 @@ def calculate_expression_pattern(_dataframe):
             sum_last = dataframe.groupby('level')['timeline'].agg(
                 lambda x: (x == 'last').sum()).reset_index()
 
-            result_all = pd.merge(sum_all, init_level, on="level", how="right").fillna(
-                0).sort_values(by=['count'], ascending=False)
+
+            result_all = pd.merge(sum_last, init_level, on="level", how="right").fillna(
+                0).sort_values(by=['timeline'], ascending=False)
+            result_all.columns = ['level','count']
+                
             result_first = pd.merge(sum_first, init_level, on="level", how="right").fillna(
                 0).sort_values(by=['timeline'], ascending=False).head(1)
             result_last = pd.merge(sum_last, init_level, on="level", how="right").fillna(
