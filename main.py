@@ -35,8 +35,8 @@ if __name__ == "__main__":
     weight_person = './models/yolov4-tensorflow'
     config_face = './models/dnn/deploy.prototxt.txt'
     weight_face = './models/dnn/res10_300x300_ssd_iter_140000_fp16.caffemodel'
-    weight_behavior = "./models/behavior/vgg16/vgg16_behavior.h5"
-    weight_expression = "./models/expression/vgg16/vgg16_5_best.h5"
+    weight_behavior = "./models/behavior/mobilenet/mobilenet_behavior.h5"
+    weight_expression = "./models/expression/vgg16_5_best_d04.h5"
     include_top = False
     class_num_behavior = 2
     class_num_expression = 8
@@ -61,19 +61,19 @@ if __name__ == "__main__":
     # init model...
     person_model = init_model_person(weight_path=weight_person)
     face_model = init_model_face_detect(config=config_face, weight=weight_face)
-    behavior_model = init_model_behavior(weight_path=weight_behavior, types="vgg16", include_top=include_top, img_height=img_height,
+    behavior_model = init_model_behavior(weight_path=weight_behavior, types="mobilenet", include_top=include_top, img_height=img_height,
                                          img_weight=img_width, channels=channels, class_num=class_num_behavior, layer_num=19, activation=activation, loss=loss)
     expression_model = init_model_expression(weight_path=weight_expression, types="vgg16", include_top=include_top, img_height=img_height,
                                              img_weight=img_width, channels=channels, class_num=class_num_expression, layer_num=19, activation=activation, loss=loss)
 
     # load dataset...
-    vdo_path = "./dataset/test/testv4.mp4"
+    vdo_path = "./dataset/test/test.mp4"
     vdocap = load_vdo(vdo_path=vdo_path)
     fps = math.ceil(vdocap.get(cv2.CAP_PROP_FPS))
     if fps == 0:
         exit()
 
-    interest_fps = fps * 6
+    interest_fps = fps * 5
 
     while True:
         nth_frame = vdocap.get(cv2.CAP_PROP_POS_FRAMES)
