@@ -6,6 +6,7 @@ from keras.applications.vgg16 import VGG16
 import matplotlib.pyplot as plt
 import multiprocessing
 import os
+import argparse
 from datetime import datetime
 
 from detection.object_detector import face_detect, init_model_face_detect
@@ -31,6 +32,12 @@ def save_output(data: list, file_name: str) -> None:
 
 
 if __name__ == "__main__":
+
+    # construct the argument parse and parse the arguments
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-v", "--video", required=True, help="path to the video file")
+    args = vars(ap.parse_args())
+
     # init values...
     weight_person = './models/yolov4-tensorflow'
     config_face = './models/dnn/deploy.prototxt.txt'
@@ -67,7 +74,7 @@ if __name__ == "__main__":
                                              img_weight=img_width, channels=channels, class_num=class_num_expression, layer_num=19, activation=activation, loss=loss)
 
     # load dataset...
-    vdo_path = "./dataset/test/test.mp4"
+    vdo_path = args['video']
     vdocap = load_vdo(vdo_path=vdo_path)
     fps = math.ceil(vdocap.get(cv2.CAP_PROP_FPS))
     if fps == 0:
@@ -175,9 +182,6 @@ if __name__ == "__main__":
         expression_list.append([nth_frame, dict_exppression[expression_res]])
         print(f"[EXPRESSION]: {dict_exppression[expression_res]}")
         print("\n==============================================")
-
-        # file = f'./export/export_frame_eat_{str(nth_frame)}_{dict_exppression[expression_res]}.jpg'
-        # cv2.imwrite(file, gray_img)
 
     save_output(expression_list, 'expression')
     save_output(behavior_list, 'behavior')
