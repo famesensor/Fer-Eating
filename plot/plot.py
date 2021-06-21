@@ -5,6 +5,7 @@ import math
 import pandas as pd
 import numpy as np
 from plot.plot_preparation import prepare_dataframe, group_expression_level, group_expression, group_interest_area
+import matplotlib.pyplot as plt
 
 
 def readtxt(file_path):
@@ -226,7 +227,8 @@ def calculate_expression_pattern(_dataframe):
 
         if dataframe['area'].iloc[0] >= 0:
             # center = math.ceil((dataframe.index[-1] + dataframe.index[0])/2)
-            center = math.ceil(((dataframe.index[-1] - dataframe.index[0])*(0.6))+dataframe.index[0])
+            center = math.ceil(
+                ((dataframe.index[-1] - dataframe.index[0])*(0.6))+dataframe.index[0])
 
             dataframe.loc[(dataframe.index < center), "timeline"] = "first"
             dataframe.loc[(dataframe.index >= center), "timeline"] = "last"
@@ -238,11 +240,10 @@ def calculate_expression_pattern(_dataframe):
             sum_last = dataframe.groupby('level')['timeline'].agg(
                 lambda x: (x == 'last').sum()).reset_index()
 
-
             result_all = pd.merge(sum_last, init_level, on="level", how="right").fillna(
                 0).sort_values(by=['timeline'], ascending=False)
-            result_all.columns = ['level','count']
-                
+            result_all.columns = ['level', 'count']
+
             result_first = pd.merge(sum_first, init_level, on="level", how="right").fillna(
                 0).sort_values(by=['timeline'], ascending=False).head(1)
             result_last = pd.merge(sum_last, init_level, on="level", how="right").fillna(
@@ -261,3 +262,22 @@ def calculate_expression_pattern(_dataframe):
         dfs.append(dataframe)
 
     return dfs, overview_result
+
+
+def plot_result_train_model(history, model_name: str):
+    plt.plot(history.history["accuracy"])
+    plt.plot(history.history['val_accuracy'])
+    plt.title(model_name)
+    plt.ylabel("Accuracy")
+    plt.xlabel("Epoch")
+    plt.legend(["Accuracy", "Validation Accuracy"])
+    plt.show()
+
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.title(model_name)
+    plt.ylabel("Loss")
+    plt.xlabel("Epoch")
+    plt.legend(["loss", "Validation Loss"])
+    plt.show()
+    return
