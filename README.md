@@ -1,10 +1,29 @@
 # Facial Expression Recognition System for Food Product Testing using Deep Learning
 
-โครงงานนี้เป็นส่วนหนึ่งของการศึกษาตามหลักสูตร </br>ปริญญาวิทยาศาสตรบัณฑิต สาขาวิชาวิทยาการคอมพิวเตอร์ประยุกต์</br> ภาควิชาคณิตศาสตร์ คณะวิทยาศาสตร์ </br>มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าธนบุรี ปีการศึกษา 2563
+## Build with
 
-*A PROJECT SUBMITTED IN PARTIAL FULFILMENT OF THE REQUIREMENT</br> FOR THE BACHELOR DEGREE OF SCIENCE (APPLIED COMPUTER SCIENCE)</br> DEPARTMENT OF MATHEMATICS FACULTY OF SCIENCE KING MONGKUT’S UNIVERSITY OF TECHNOLOGY THONBURI 2020*
+- [Python](https://www.python.org/)
+- [Google Colab](https://colab.research.google.com/)
 
-## รายชื่อสมาชิก
-- นายกรวิชญ์ โคศรีเพชร
-- นายวุฒินันท์ แย้มบู่
-- นายสาฑิต จันทร์ทอง
+## Dataset
+
+- The **Eating Behavior Detection** dataset was collected by us, consisting of 14 university students.
+- The **Facial Expression Recognition** is trained and tested on a mixture of CK+ and JAFFE datasets.
+
+## Used libraries
+- cv2
+- Numpy
+- Keras
+- datetime
+
+## Usage
+To run the program, please place your test video file to "./dataset/test/" and change 'test.mp4' in 'main.py' line 70 to your filename.
+```python
+vdo_path = "./dataset/test/test.mp4" #change fliename here
+```
+then, type:
+```python
+python main.py
+```
+## License
+Distributed under the King Mongkut's University of Technology Thonburi License.
