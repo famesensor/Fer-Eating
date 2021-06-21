@@ -1,7 +1,8 @@
 import numpy as np
 
 from preparation.preparation import load_data_set, load_image
-from behavior.behavior_model import init_model_train_behavior, train_model, plot_result_train_model, init_model_vgg16, init_model_vgg19, init_model_resnet50v2, init_model_mobilenet, setup_network
+from behavior.behavior_model import init_model_train_behavior, train_model, setup_network
+from plot.plot import plot_result_train_model
 
 if __name__ == "__main__":
     # init value
