@@ -34,11 +34,11 @@ The satisfaction is divided into nine types, for enabling food producers to have
 | :-------- | :--------: | :--------- |
 |Positive| + + | Easy to chew, Taste good and feeling satisfied after eating|
 |Neutral | N N | Easy to chew and feeling normal after eating|
-|Negative | - - | Chewing food at first and feeling less satisfied With food|
+|Negative | - - | Chewing food at first and feeling less satisfied after eating|
 |Positive Neutral | + N | Easy to chew, Taste good and feeling normal after eating|
-|Positive Negative | + - | Easy to chew, Taste good and feeling less satisfied With food|
+|Positive Negative | + - | Easy to chew, Taste good and feeling less satisfied after eating|
 |Neutral Positive | N + | Easy to chew and feeling satisfied after eating|
-|Neutral Negative | N - | Easy to chew and feeling less satisfied With food|
+|Neutral Negative | N - | Easy to chew and feeling less satisfied after eating|
 |Negative Positive | - + | Chewing food at first and feeling satisfied after eating|
 |Negative Neutral | - N | Chewing food at first and feeling normal after eating|
 
