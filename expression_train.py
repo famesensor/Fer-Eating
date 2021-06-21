@@ -5,8 +5,8 @@ import pandas as pd
 from sklearn.model_selection import StratifiedKFold
 from keras.preprocessing.image import ImageDataGenerator
 
-from expression.expression_model import init_model_train_expression, train_model, plot_result_train_model
-
+from expression.expression_model import init_model_train_expression, train_model
+from plot.plot import plot_result_train_model
 
 if __name__ == "__main__":
     CATEGORIES = ["anger", "contempt", "disgust", "fear",
