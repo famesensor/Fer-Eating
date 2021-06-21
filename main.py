@@ -1,10 +1,6 @@
 import cv2
 import math
 import numpy as np
-import multiprocessing as mp
-from keras.applications.vgg16 import VGG16
-import matplotlib.pyplot as plt
-import multiprocessing
 import os
 import argparse
 from datetime import datetime
@@ -35,7 +31,8 @@ if __name__ == "__main__":
 
     # construct the argument parse and parse the arguments
     ap = argparse.ArgumentParser()
-    ap.add_argument("-v", "--video", required=True, help="path to the video file")
+    ap.add_argument("-v", "--video", required=True,
+                    help="path to the video file")
     args = vars(ap.parse_args())
 
     # init values...
@@ -109,9 +106,9 @@ if __name__ == "__main__":
         # face dectection
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         gray_img = np.zeros_like(frame)
-        gray_img[:,:,0] = gray
-        gray_img[:,:,1] = gray
-        gray_img[:,:,2] = gray
+        gray_img[:, :, 0] = gray
+        gray_img[:, :, 1] = gray
+        gray_img[:, :, 2] = gray
 
         face_res = face_detect(net=face_model, image=gray_img)
 
@@ -136,19 +133,19 @@ if __name__ == "__main__":
         behavior_res = np.argmax(behavior_res)
 
         ##
-        ## condition for keep interest interval...
+        # condition for keep interest interval...
         ##
         # checking if behavior response is "eat"
         if behavior_res == 0:
             # checking for eating activity
-            if not is_eating: 
+            if not is_eating:
                 print(
                     "\n[INFO]: First eating in video frame on. {}".format(nth_frame))
 
                 is_eating = True
 
                 # export image of first eating for plot
-                export_image(frame, nth_frame) 
+                export_image(frame, nth_frame)
 
         # checking if sample is eating
         if is_eating:
