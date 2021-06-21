@@ -15,15 +15,17 @@
 - Numpy
 - Keras
 - datetime
+- sklearn
+- mlxtend
+- preparation
+- detection
+- behavior
+- expression
+- plot
 
 ## Usage
-To run the program, please place your test video file to "./dataset/test/" and change 'test.mp4' in 'main.py' line 70 to your filename.
+To run the program, just type:
 ```python
-vdo_path = "./dataset/test/test.mp4" #change fliename here
+python main.py --video {VIDEO_PATH}
 ```
-then, type:
-```python
-python main.py
-```
-## License
-Distributed under the King Mongkut's University of Technology Thonburi License.
+Then the program will display FER graph of your video.
