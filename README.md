@@ -40,8 +40,19 @@ The satisfaction is divided into nine types, for enabling food producers to have
 |Negative Neutral | - N | Chewing food at first and feeling normal after eating|
 
 ## Usage
-To run the program, just type:
+After installed libraries, then copy downloaded model folders to **./models** directory
+
+To run the program, use script below.
 ```python
 python main.py --video {VIDEO_PATH}
 ```
-Then the program will display FER graph of your video.
+And the program will display FER graph of your video.
+
+## Model files
+- [DNN face detection](https://drive.google.com/file/d/1XSPJ8AeF7-_Sycg-wXFnwpjnsesXZUs9/view?usp=sharing)
+- [YOLOv4 object detection](https://drive.google.com/file/d/1J4wekLvy4xrvUrftStZ9at1MpEgLpc3R/view?usp=sharing)
+- [MobileNetV2 Behavior detection](https://drive.google.com/file/d/1dWi-9_AnNjBnk7I-g7xrz3C7cO-6dMgu/view?usp=sharing)
+- [VGG16 Facial expression recognition](https://drive.google.com/file/d/1Hc-yN7_uEGD1ulACzce5_RWI1yuPnEOS/view?usp=sharing)
+
+## License
+[King Mongkut’s University of Technology Thonburi](https://www.kmutt.ac.th/en/)
