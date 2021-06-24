@@ -17,17 +17,14 @@ The satisfaction is divided into nine types, for enabling food producers to have
 - The **Facial Expression Recognition** is trained and tested on a mixture of CK+ and JAFFE datasets.
 
 ## Used libraries
-- cv2
-- Numpy
-- Keras
-- datetime
+- opencv
+- numpy
+- keras
 - sklearn
 - mlxtend
-- preparation
-- detection
-- behavior
-- expression
-- plot
+- matplotlib
+- plotly
+- pandas
 
 ## Emotional patterns and meaning
 | Pattern | Symbol |  Meaning |
