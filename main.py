@@ -39,8 +39,8 @@ if __name__ == "__main__":
     weight_person = './models/yolov4-tensorflow'
     config_face = './models/dnn/deploy.prototxt.txt'
     weight_face = './models/dnn/res10_300x300_ssd_iter_140000_fp16.caffemodel'
-    weight_behavior = "./models/behavior/mobilenet/mobilenet_behavior.h5"
-    weight_expression = "./models/expression/vgg16_5_best_d04.h5"
+    weight_behavior = "./models/behavior/mobilenet_behavior.h5"
+    weight_expression = "./models/expression/vgg16_expression.h5"
     include_top = False
     class_num_behavior = 2
     class_num_expression = 8
