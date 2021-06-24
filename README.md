@@ -16,7 +16,7 @@ The satisfaction is divided into nine types, for enabling food producers to have
 - The **Eating Behavior Detection** dataset was collected by us, consisting of 14 university students.
 - The **Facial Expression Recognition** is trained and tested on a mixture of CK+ and JAFFE datasets.
 
-## Used libraries
+## Required libraries
 - opencv
 - numpy
 - keras
