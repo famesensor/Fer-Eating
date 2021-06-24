@@ -13,7 +13,7 @@ The satisfaction is divided into nine types, for enabling food producers to have
 
 ## Dataset
 
-- The **Eating Behavior Detection** dataset was collected by us, consisting of 14 university students.
+- The **Eating Behavior Detection** dataset was collected by our team, consisting of 14 university students.
 - The **Facial Expression Recognition** is trained and tested on a mixture of CK+ and JAFFE datasets.
 
 ## Required libraries
@@ -46,7 +46,7 @@ To run the program, use script below.
 ```python
 python main.py --video {VIDEO_PATH}
 ```
-And the program will display FER graph of your video.
+And the program will display satisfaction graph of the video after processed.
 
 ## Model files
 - [DNN face detection](https://drive.google.com/file/d/1XSPJ8AeF7-_Sycg-wXFnwpjnsesXZUs9/view?usp=sharing)
