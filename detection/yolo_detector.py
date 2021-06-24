@@ -26,7 +26,7 @@ def read_class_names(class_file_name):
     return names
 
 
-def crop_image(image, bboxes, classes=read_class_names('./models/yolo/coco.names'), show_label=True):
+def crop_image(image, bboxes, classes=read_class_names('./models/yolov4-tensorflow/assets/coco.names'), show_label=True):
     num_classes = len(classes)
     image_h, image_w, _ = image.shape
     hsv_tuples = [(1.0 * x / num_classes, 1., 1.) for x in range(num_classes)]
