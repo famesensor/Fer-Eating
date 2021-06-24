@@ -35,6 +35,9 @@ if __name__ == "__main__":
                     help="path to the video file")
     args = vars(ap.parse_args())
 
+    os.makedirs("export", exist_ok=True)
+    os.makedirs("export/temp", exist_ok=True)
+
     # init values...
     weight_person = './models/yolov4-tensorflow'
     config_face = './models/dnn/deploy.prototxt.txt'
